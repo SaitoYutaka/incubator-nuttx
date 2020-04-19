@@ -2,6 +2,10 @@
 
 This file will show that how to build nuttx for micro:bit.
 
+## Help
+
+Please give me some advice on how to do this.
+
 ## Why
 
 Just my study.
@@ -50,5 +54,5 @@ config ARCH_BOARD_STM32F4_DISCOVERY
 
 ...
 
-## Help
+
 
