@@ -5,6 +5,7 @@ This file will show that how to build nuttx for micro:bit.
 ## Help
 
 Please give me some advice on how to do this.
+
 If so, please send me on https://github.com/SaitoYutaka/incubator-nuttx/issues .
 
 ## Why
