@@ -605,6 +605,13 @@ config ARCH_BOARD_MIRTOO
 		This is the port to the DTX1-4000L "Mirtoo" module.  This module uses MicroChip
 		PIC32MX250F128D.  See http://www.dimitech.com/ for further information.
 
+config ARCH_BOARD_MICROBIT
+	bool "BBC micro:bit"
+	depends on ARCH_CHIP_PIC32MX250F128D
+	select ARCH_HAVE_LEDS
+	---help---
+		BBC micro:bit
+
 config ARCH_BOARD_MICROPENDOUS3
 	bool "Opendous Micropendous 3 board"
 	depends on ARCH_CHIP_AT90USB646 || ARCH_CHIP_AT90USB647 || ARCH_CHIP_AT90USB1286 || ARCH_CHIP_AT90USB1287
@@ -2019,6 +2026,7 @@ config ARCH_BOARD
 	default "metro-m4"                 if ARCH_BOARD_METRO_M4
 	default "micropendous3"            if ARCH_BOARD_MICROPENDOUS3
 	default "mirtoo"                   if ARCH_BOARD_MIRTOO
+	default "microbit"                 if ARCH_BOARD_MICROBIT
 	default "misoc"                    if ARCH_BOARD_MISOC_QEMU || ARCH_BOARD_MISOC_VERILATOR
 	default "moteino-mega"             if ARCH_BOARD_MOTEINO_MEGA
 	default "ne64badge"                if ARCH_BOARD_NE64BADGE
@@ -2658,6 +2666,9 @@ source "boards/hc/mcs92s12ne64/ne64badge/Kconfig"
 endif
 if ARCH_BOARD_MIRTOO
 source "boards/mips/pic32mx/mirtoo/Kconfig"
+endif
+if ARCH_BOARD_MICROBIT
+source "boards/arm/nrf51/microbit/Kconfig"
 endif
 if ARCH_BOARD_PIC32MX_STARTERKIT
 source "boards/mips/pic32mx/pic32mx-starterkit/Kconfig"

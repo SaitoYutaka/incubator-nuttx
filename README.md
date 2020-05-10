@@ -22,6 +22,12 @@ in progress.
 #### Hardware
  * https://tech.microbit.org/hardware/
 
+#### Nordic nRF51822-QFAA-R rev 3
+ * https://www.nordicsemi.com/Products/Low-power-short-range-wireless/nRF51822
+
+####  Standalone drivers for peripherals present in Nordic SoCs
+ * https://github.com/NordicSemiconductor/nrfx
+
 #### Cortex-M0
  * https://en.wikipedia.org/wiki/ARM_Cortex-M#Cortex-M0
 
