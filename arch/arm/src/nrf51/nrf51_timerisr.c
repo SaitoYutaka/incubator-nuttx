@@ -124,25 +124,24 @@ static int nrf51_timerisr(int irq, uint32_t *regs, void *arg)
 void arm_timer_initialize(void)
 {
   uint32_t regval;
+  /* Set the SysTick interrupt to the default priority */
 
-  regval  = getreg32(NVIC_SYSTICK_CTRL);
-  regval &= ~NVIC_SYSTICK_CTRL_CLKSOURCE;
-  putreg32(regval, NVIC_SYSTICK_CTRL);
+  regval = getreg32(ARMV6M_SYSCON_SHPR3);
+  regval &= ~SYSCON_SHPR3_PRI_15_MASK;
+  regval |= (NVIC_SYSH_PRIORITY_DEFAULT << SYSCON_SHPR3_PRI_15_SHIFT);
+  putreg32(regval, ARMV6M_SYSCON_SHPR3);
 
   /* Configure SysTick to interrupt at the requested rate */
 
-  putreg32(SYSTICK_RELOAD, NVIC_SYSTICK_RELOAD);
+  putreg32(SYSTICK_RELOAD, ARMV6M_SYSTICK_RVR);
 
   /* Attach the timer interrupt vector */
 
-  (void)irq_attach(NRF52_IRQ_SYSTICK, (xcpt_t)nrf51_timerisr, NULL);
+  (void)irq_attach(NRF51_IRQ_SYSTICK, (xcpt_t)nrf51_timerisr, NULL);
 
-  /* Enable SysTick interrupts */
-
-  putreg32((NVIC_SYSTICK_CTRL_CLKSOURCE | NVIC_SYSTICK_CTRL_TICKINT |
-            NVIC_SYSTICK_CTRL_ENABLE), NVIC_SYSTICK_CTRL);
+  putreg32((SYSTICK_CSR_TICKINT | SYSTICK_CSR_ENABLE), ARMV6M_SYSTICK_CSR);
 
   /* And enable the timer interrupt */
 
-  up_enable_irq(NRF52_IRQ_SYSTICK);
+  up_enable_irq(NRF51_IRQ_SYSTICK);
 }
