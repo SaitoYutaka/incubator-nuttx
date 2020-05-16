@@ -60,3 +60,7 @@ endif
 ifeq ($(CONFIG_DEBUG_FEATURES),y)
 CMN_CSRCS += up_dumpnvic.c
 endif
+
+CHIP_ASRCS  =
+CHIP_CSRCS  = nrf51_start.c nrf51_clockconfig.c nrf51_irq.c nrf51_utils.c
+CHIP_CSRCS += nrf51_allocateheap.c nrf51_lowputc.c nrf51_gpio.c nrf51_nvmc.c
