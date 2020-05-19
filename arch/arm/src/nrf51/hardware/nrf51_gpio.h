@@ -60,8 +60,6 @@
 #define NRF51_GPIO_DIR_OFFSET        0x0514 /* Direction of GPIO pins */
 #define NRF51_GPIO_DIRSET_OFFSET     0x0518 /* DIR set register */
 #define NRF51_GPIO_DIRCLR_OFFSET     0x051c /* DIR clear register */
-#define NRF51_GPIO_LATCH_OFFSET      0x0520 /* Latch register  */
-#define NRF51_GPIO_DETECTMODE_OFFSET 0x0524 /* Select between default DETECT signal behaviour and LDETECT mode */
 
 #define NRF51_GPIO_PIN_CNF_OFFSET(n) (0x0700 + (n << 2))
 
