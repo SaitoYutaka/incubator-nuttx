@@ -5,3 +5,109 @@
 
 comment "NRF51 Configuration Options"
 
+choice
+	prompt "NRF51 Chip Selection"
+	default ARCH_CHIP_NRF51832
+	depends on ARCH_CHIP_NRF51
+
+config ARCH_CHIP_NRF51832
+	bool "NRF51832"
+	select ARCH_FAMILY_NRF51
+	select ARCH_FAMILY_NRF51832
+	#select NRF51_HAVE_I2C_MASTER
+	#select NRF51_HAVE_UART
+
+config ARCH_CHIP_NRF51840
+	bool "NRF51840"
+	select ARCH_FAMILY_NRF51
+	select ARCH_FAMILY_NRF51840
+	#select NRF51_HAVE_I2C_MASTER
+	#select NRF51_HAVE_UART
+
+endchoice # NRF51 Chip Selection
+
+# NRF51 Families
+
+config ARCH_FAMILY_NRF51
+	bool
+	default n
+
+config ARCH_FAMILY_NRF51832
+	bool
+	default n
+
+config ARCH_FAMILY_NRF51840
+	bool
+	default n
+
+# Peripheral support
+
+# Peripheral Selection
+
+config NRF51_HAVE_I2C_MASTER
+	bool
+	default n
+
+config NRF51_HAVE_SPI_MASTER
+	bool
+	default n
+
+config NRF51_HAVE_UART
+	bool
+	default n
+
+menu "NRF51 Peripheral Selection"
+
+config NRF51_I2C0_MASTER
+	bool "I2C0 Master"
+	default n
+	select NRF51_HAVE_I2C_MASTER
+
+config NRF51_I2C1_MASTER
+	bool "I2C1 Master"
+	default n
+	select NRF51_HAVE_I2C_MASTER
+
+config NRF51_UART0
+	bool "UART0"
+	default n
+	select UART0_SERIALDRIVER
+	select NRF51_HAVE_UART
+
+config NRF51_RNG
+	bool "Random Generator"
+	default n
+	select ARCH_HAVE_RNG
+
+config NRF51_QSPI
+	bool "QSPI"
+	default n
+	depends on ARCH_CHIP_NRF51840
+
+config NRF51_WDT
+	bool "Watchdog (WDT)"
+	default n
+	select WATCHDOG
+
+endmenu # NRF51 Peripheral Selection
+
+config NRF51_FLASH_PREFETCH
+	bool "Enable FLASH Pre-fetch"
+	default y
+	---help---
+		Enable FLASH prefetch
+
+config NRF51_PROGMEM
+	bool "FLASH program memory"
+	default n
+	select ARCH_HAVE_PROGMEM
+	---help---
+		Enable support FLASH interfaces as defined in include/nuttx/progmem.h
+
+menu "GPIO Interrupt Configuration"
+
+config NRF51_GPIOIRQ
+	bool "Support GPIO Interrupts"
+	default n
+
+endmenu # GPIO Interrupt Configuration
