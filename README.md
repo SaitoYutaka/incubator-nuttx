@@ -34,33 +34,54 @@ in progress.
 #### What are the differences between Cortex-M0 and Cortex-M0+?
  * https://community.cypress.com/docs/DOC-10652
 
-## Step2
-### Dodument
-
-https://github.com/SaitoYutaka/incubator-nuttx/blob/master/Documentation/NuttxPortingGuide.html#L930
+## Files
 
 ```
-2.5.4 Adding a New Board Configuration
-Okay, so you have created a new board configuration directory. Now, how do you hook this board into the configuration system so that you can select with make menuconfig?
-
-You will need modify the file boards/Kconfig. Let's look at the STM32F4-Discovery configuration in the Kconfig file and see how we would add a new board directory to the configuration. For this configuration let's say that you new board resides in the directory boards/myarch/mychip/myboard; It uses an MCU selected with CONFIG_ARCH_CHIP_MYMCU; and you want the board to be selected with CONFIG_ARCH_BOARD_MYBOARD. Then here is how you can clone the STM32F4-Discovery configuration in boards/Kconfig to support your new board configuration.
-
-In boards/Kconfig for the stm32f4-discovery, you will see a configuration definition like this:
-
-config ARCH_BOARD_STM32F4_DISCOVERY
-    bool "STMicro STM32F4-Discovery board"
-    depends on ARCH_CHIP_STM32F407VG
-    select ARCH_HAVE_LEDS
-    select ARCH_HAVE_BUTTONS
-    select ARCH_HAVE_IRQBUTTONS
-    ---help---
-        STMicro STM32F4-Discovery board based on the STMicro STM32F407VGT6 MCU.
+$ git diff 66401c8960c5211ded41ae4f60bfb1746a84bd50 --name-only
+README.md
+arch/arm/include/nrf51/chip.h
+arch/arm/include/nrf51/irq.h
+arch/arm/include/nrf51/nrf51_irq.h
+arch/arm/src/nrf51/Kconfig
+arch/arm/src/nrf51/Make.defs
+arch/arm/src/nrf51/hardware/.gitkeep
+arch/arm/src/nrf51/hardware/nrf51_clock.h
+arch/arm/src/nrf51/hardware/nrf51_gpio.h
+arch/arm/src/nrf51/hardware/nrf51_memorymap.h
+arch/arm/src/nrf51/hardware/nrf51_uarte.h
+arch/arm/src/nrf51/hardware/nrf51_wdt.h
+arch/arm/src/nrf51/nrf51_allocateheap.c
+arch/arm/src/nrf51/nrf51_gpio.c
+arch/arm/src/nrf51/nrf51_gpio.h
+arch/arm/src/nrf51/nrf51_irq.c
+arch/arm/src/nrf51/nrf51_irq.h
+arch/arm/src/nrf51/nrf51_lowputc.c
+arch/arm/src/nrf51/nrf51_lowputc.h
+arch/arm/src/nrf51/nrf51_start.c
+arch/arm/src/nrf51/nrf51_start.h
+arch/arm/src/nrf51/nrf51_timerisr.c
+arch/arm/src/nrf51/nrf51_utils.c
+boards/Kconfig
+boards/arm/nrf51/microbit/Kconfig
+boards/arm/nrf51/microbit/README.txt
+boards/arm/nrf51/microbit/configs/nsh/.gitkeep
+boards/arm/nrf51/microbit/configs/nsh/defconfig
+boards/arm/nrf51/microbit/include/.gitkeep
+boards/arm/nrf51/microbit/include/board.h
+boards/arm/nrf51/microbit/scripts/.gitkeep
+boards/arm/nrf51/microbit/scripts/Make.defs
+boards/arm/nrf51/microbit/scripts/microbit.ld
+boards/arm/nrf51/microbit/src/.gitkeep
+boards/arm/nrf51/microbit/src/Makefile
+boards/arm/nrf51/microbit/src/nrf51-generic.h
+boards/arm/nrf51/microbit/src/nrf51_appinit.c
+boards/arm/nrf51/microbit/src/nrf51_autoleds.c
+boards/arm/nrf51/microbit/src/nrf51_boot.c
+boards/arm/nrf51/microbit/src/nrf51_bringup.c
+boards/arm/nrf51/microbit/src/nrf51_buttons.c
+boards/arm/nrf51/microbit/src/nrf51_userleds.c
 ```
 
-## Step3
-### Edit boards/Kconfig
-
-...
 
 
 
