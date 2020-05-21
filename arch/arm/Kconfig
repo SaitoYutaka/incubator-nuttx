@@ -197,6 +197,12 @@ config ARCH_CHIP_MOXART
 	---help---
 		MoxART family
 
+config ARCH_CHIP_NRF51
+	bool "Nordic NRF51"
+	select ARCH_CORTEXM0
+	---help---
+		Nordic NRF51 architectures (ARM Cortex-M0).
+
 config ARCH_CHIP_NRF52
 	bool "Nordic NRF52"
 	select ARCH_CORTEXM4
