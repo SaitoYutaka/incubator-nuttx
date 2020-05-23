@@ -93,8 +93,8 @@ static inline void wait_for_flash_ready(void)
 
 static inline void nrf_mem_barrier(void)
 {
-  ARM_ISB();
-  ARM_DSB();
+  // ARM_ISB();
+  // ARM_DSB();
 }
 
 /****************************************************************************
