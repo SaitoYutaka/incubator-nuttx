@@ -42,7 +42,7 @@
 #include <sys/types.h>
 #include <syslog.h>
 
-#ifdef CONFIG_NRF52_WDT
+#ifdef CONFIG_NRF51_WDT
 #  include "nrf51_wdt.h"
 #endif
 
@@ -72,7 +72,7 @@ int nrf51_bringup(void)
 {
   int ret;
 
-#ifdef CONFIG_NRF52_WDT
+#ifdef CONFIG_NRF51_WDT
   /* Start Watchdog timer */
 
   ret = nrf51_wdt_initialize(CONFIG_WATCHDOG_DEVPATH, 1, 1);

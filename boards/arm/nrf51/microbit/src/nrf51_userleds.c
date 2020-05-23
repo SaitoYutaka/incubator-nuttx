@@ -68,7 +68,7 @@
  *  void board_userled_all(uint8_t ledset);
  */
 
-#ifdef CONFIG_NRF52_GENERIC_LED_ACTIVELOW
+#ifdef CONFIG_NRF51_GENERIC_LED_ACTIVELOW
 #define LED_ON 0
 #define LED_OFF 1
 #else

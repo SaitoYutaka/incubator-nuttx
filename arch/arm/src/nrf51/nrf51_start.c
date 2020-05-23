@@ -218,7 +218,7 @@ void __start(void)
 
   showprogress('C');
 
-#if defined(CONFIG_ARCH_FAMILY_NRF52832)
+#if defined(CONFIG_ARCH_FAMILY_NRF51832)
   /* Initialize the errdata work-around */
 
   nrf51832_errdata_init();
@@ -228,7 +228,7 @@ void __start(void)
 
   nrf51_fpuconfig();
 
-#ifdef CONFIG_NRF52_FLASH_PREFETCH
+#ifdef CONFIG_NRF51_FLASH_PREFETCH
   nrf_nvmc_enable_icache(true);
   nrf_nvmc_enable_profile(true);
 #endif

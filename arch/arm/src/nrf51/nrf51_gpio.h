@@ -267,7 +267,7 @@ int nrf51_gpio_ackedge(int irq);
 #endif
 
 /************************************************************************************
- * Name: rnf52_gpio_write
+ * Name: rnf51_gpio_write
  *
  * Description:
  *   Write one or zero to the selected GPIO pin
@@ -287,7 +287,7 @@ void nrf51_gpio_write(nrf51_pinset_t pinset, bool value);
 bool nrf51_gpio_read(nrf51_pinset_t pinset);
 
 /************************************************************************************
- * Function:  nf52_gpio_dump
+ * Function:  nf51_gpio_dump
  *
  * Description:
  *   Dump all GPIO registers associated with the base address of the provided pinset.
