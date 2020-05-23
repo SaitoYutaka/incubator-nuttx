@@ -229,7 +229,7 @@ void __start(void)
   nrf51_fpuconfig();
 
 #ifdef CONFIG_NRF51_FLASH_PREFETCH
-  nrf_nvmc_enable_icache(true);
+  // nrf_nvmc_enable_icache(true);
   nrf_nvmc_enable_profile(true);
 #endif
 
