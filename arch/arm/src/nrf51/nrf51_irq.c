@@ -231,8 +231,8 @@ void up_irqinitialize(void)
    * under certain conditions.
    */
 
-  irq_attach(NUC_IRQ_SVCALL, up_svcall, NULL);
-  irq_attach(NUC_IRQ_HARDFAULT, up_hardfault, NULL);
+  irq_attach(NRF51_IRQ_SVCALL, up_svcall, NULL);
+  irq_attach(NRF51_IRQ_HARDFAULT, up_hardfault, NULL);
 
   /* Attach all other processor exceptions (except reset and sys tick) */
 
@@ -277,7 +277,7 @@ void up_disable_irq(int irq)
 
   /* Handle processor exceptions.  Only SysTick can be disabled */
 
-  else if (irq == NUC_IRQ_SYSTICK)
+  else if (irq == NRF51_IRQ_SYSTICK)
     {
       modifyreg32(ARMV6M_SYSTICK_CSR, SYSTICK_CSR_ENABLE, 0);
     }
@@ -314,7 +314,7 @@ void up_enable_irq(int irq)
 
   /* Handle processor exceptions.  Only SysTick can be disabled */
 
-  else if (irq == NUC_IRQ_SYSTICK)
+  else if (irq == NRF51_IRQ_SYSTICK)
     {
       modifyreg32(ARMV6M_SYSTICK_CSR, 0, SYSTICK_CSR_ENABLE);
     }
@@ -353,9 +353,9 @@ int up_prioritize_irq(int irq, int priority)
   uint32_t regval;
   int shift;
 
-  DEBUGASSERT(irq == NUC_IRQ_SVCALL ||
+  DEBUGASSERT(irq == NRF51_IRQ_SVCALL ||
               irq == NUC_IRQ_PENDSV ||
-              irq == NUC_IRQ_SYSTICK ||
+              irq == NRF51_IRQ_SYSTICK ||
              (irq >= NRF51_IRQ_EXTINT && irq < NR_IRQS));
   DEBUGASSERT(priority >= NVIC_SYSH_PRIORITY_MAX &&
               priority <= NVIC_SYSH_PRIORITY_MIN);
@@ -382,7 +382,7 @@ int up_prioritize_irq(int irq, int priority)
       regaddr = ARMV6M_SYSCON_SHPR2;
       shift   = SYSCON_SHPR3_PRI_14_SHIFT;
     }
-  else if (irq == NUC_IRQ_SYSTICK)
+  else if (irq == NRF51_IRQ_SYSTICK)
     {
       regaddr = ARMV6M_SYSCON_SHPR2;
       shift   = SYSCON_SHPR3_PRI_15_SHIFT;
