@@ -683,6 +683,7 @@ config ARCH_CHIP
 	default "lpc54xx"	if ARCH_CHIP_LPC54XX
 	default "max326xx"	if ARCH_CHIP_MAX326XX
 	default "moxart"	if ARCH_CHIP_MOXART
+	default "nrf51"		if ARCH_CHIP_NRF51
 	default "nrf52"		if ARCH_CHIP_NRF52
 	default "nuc1xx"	if ARCH_CHIP_NUC1XX
 	default "s32k1xx"	if ARCH_CHIP_S32K1XX
