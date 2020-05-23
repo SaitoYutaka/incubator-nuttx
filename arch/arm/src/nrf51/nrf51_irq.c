@@ -1,7 +1,7 @@
 /****************************************************************************
  * arch/arm/src/nrf51/nrf51_irq.c
  *
- *   Copyright (C) 2018 Gregory Nutt. All rights reserved.
+ *   Copyright (C) 2009-2014, 2016 Gregory Nutt. All rights reserved.
  *   Author: Gregory Nutt <gnutt@nuttx.org>
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,11 @@
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
 #include <arch/irq.h>
-#include <arch/armv7-m/nvicpri.h>
 
-#include "chip.h"
 #include "nvic.h"
-#include "ram_vectors.h"
 #include "up_arch.h"
 #include "up_internal.h"
 
-#include "nrf51_gpio.h"
 #include "nrf51_irq.h"
 
 /****************************************************************************
@@ -65,13 +61,6 @@
 #define DEFPRIORITY32 \
   (NVIC_SYSH_PRIORITY_DEFAULT << 24 | NVIC_SYSH_PRIORITY_DEFAULT << 16 | \
    NVIC_SYSH_PRIORITY_DEFAULT << 8  | NVIC_SYSH_PRIORITY_DEFAULT)
-
-/* Given the address of a NVIC ENABLE register, this is the offset to
- * the corresponding CLEAR ENABLE register.
- */
-
-#define NVIC_ENA_OFFSET    (0)
-#define NVIC_CLRENA_OFFSET (NVIC_IRQ0_31_CLEAR - NVIC_IRQ0_31_ENABLE)
 
 /****************************************************************************
  * Public Data
@@ -85,18 +74,16 @@
 
 volatile uint32_t *g_current_regs[1];
 
-/* This is the address of the  exception vector table (determined by the
- * linker script).
- */
-
-extern uint32_t _vectors[];
+/****************************************************************************
+ * Private Data
+ ****************************************************************************/
 
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
 
 /****************************************************************************
- * Name: nrf51_dumpnvic
+ * Name: nuc_dumpnvic
  *
  * Description:
  *   Dump some interesting NVIC registers
@@ -104,57 +91,54 @@ extern uint32_t _vectors[];
  ****************************************************************************/
 
 #if defined(CONFIG_DEBUG_IRQ_INFO)
-static void nrf51_dumpnvic(const char *msg, int irq)
+static void nuc_dumpnvic(const char *msg, int irq)
 {
   irqstate_t flags;
 
   flags = enter_critical_section();
 
   irqinfo("NVIC (%s, irq=%d):\n", msg, irq);
-  irqinfo("  INTCTRL:    %08x VECTAB: %08x\n",
-          getreg32(NVIC_INTCTRL), getreg32(NVIC_VECTAB));
-#if 0
-  irqinfo("  SYSH ENABLE MEMFAULT: %08x BUSFAULT: %08x USGFAULT: %08x SYSTICK: %08x\n",
-          getreg32(NVIC_SYSHCON_MEMFAULTENA), getreg32(NVIC_SYSHCON_BUSFAULTENA),
-          getreg32(NVIC_SYSHCON_USGFAULTENA), getreg32(NVIC_SYSTICK_CTRL_ENABLE));
-#endif
-  irqinfo("  IRQ ENABLE: %08x %08x\n",
-          getreg32(NVIC_IRQ0_31_ENABLE), getreg32(NVIC_IRQ32_63_ENABLE));
-  irqinfo("  SYSH_PRIO:  %08x %08x %08x\n",
-          getreg32(NVIC_SYSH4_7_PRIORITY), getreg32(NVIC_SYSH8_11_PRIORITY),
-          getreg32(NVIC_SYSH12_15_PRIORITY));
+  irqinfo("  ISER:       %08x ICER:   %08x\n",
+          getreg32(ARMV6M_NVIC_ISER), getreg32(ARMV6M_NVIC_ICER));
+  irqinfo("  ISPR:       %08x ICPR:   %08x\n",
+          getreg32(ARMV6M_NVIC_ISPR), getreg32(ARMV6M_NVIC_ICPR));
   irqinfo("  IRQ PRIO:   %08x %08x %08x %08x\n",
-          getreg32(NVIC_IRQ0_3_PRIORITY), getreg32(NVIC_IRQ4_7_PRIORITY),
-          getreg32(NVIC_IRQ8_11_PRIORITY), getreg32(NVIC_IRQ12_15_PRIORITY));
+          getreg32(ARMV6M_NVIC_IPR0), getreg32(ARMV6M_NVIC_IPR1),
+          getreg32(ARMV6M_NVIC_IPR2), getreg32(ARMV6M_NVIC_IPR3));
   irqinfo("              %08x %08x %08x %08x\n",
-          getreg32(NVIC_IRQ16_19_PRIORITY), getreg32(NVIC_IRQ20_23_PRIORITY),
-          getreg32(NVIC_IRQ24_27_PRIORITY), getreg32(NVIC_IRQ28_31_PRIORITY));
-  irqinfo("              %08x %08x %08x %08x\n",
-          getreg32(NVIC_IRQ32_35_PRIORITY), getreg32(NVIC_IRQ36_39_PRIORITY),
-          getreg32(NVIC_IRQ40_43_PRIORITY), getreg32(NVIC_IRQ44_47_PRIORITY));
-  irqinfo("              %08x %08x %08x\n",
-          getreg32(NVIC_IRQ48_51_PRIORITY), getreg32(NVIC_IRQ52_55_PRIORITY),
-          getreg32(NVIC_IRQ56_59_PRIORITY));
+          getreg32(ARMV6M_NVIC_IPR4), getreg32(ARMV6M_NVIC_IPR5),
+          getreg32(ARMV6M_NVIC_IPR6), getreg32(ARMV6M_NVIC_IPR7));
+
+  irqinfo("SYSCON:\n");
+  irqinfo("  CPUID:      %08x\n",
+          getreg32(ARMV6M_SYSCON_CPUID));
+  irqinfo("  ICSR:       %08x AIRCR:  %08x\n",
+          getreg32(ARMV6M_SYSCON_ICSR), getreg32(ARMV6M_SYSCON_AIRCR));
+  irqinfo("  SCR:        %08x CCR:    %08x\n",
+          getreg32(ARMV6M_SYSCON_SCR), getreg32(ARMV6M_SYSCON_CCR));
+  irqinfo("  SHPR2:      %08x SHPR3:  %08x\n",
+          getreg32(ARMV6M_SYSCON_SHPR2), getreg32(ARMV6M_SYSCON_SHPR3));
 
   leave_critical_section(flags);
 }
+
 #else
-#  define nrf51_dumpnvic(msg, irq)
+#  define nuc_dumpnvic(msg, irq)
 #endif
 
 /****************************************************************************
- * Name: nrf51_nmi, nrf51_busfault, nrf51_usagefault, nrf51_pendsv,
- *       nrf51_dbgmonitor, nrf51_pendsv, nrf51_reserved
+ * Name: nuc_nmi, nuc_busfault, nuc_usagefault, nuc_pendsv,
+ *       nuc_dbgmonitor, nuc_pendsv, nuc_reserved
  *
  * Description:
- *   Handlers for various exceptions.  None are handled and all are fatal
+ *   Handlers for various execptions.  None are handled and all are fatal
  *   error conditions.  The only advantage these provided over the default
  *   unexpected interrupt handler is that they provide a diagnostic output.
  *
  ****************************************************************************/
 
 #ifdef CONFIG_DEBUG_FEATURES
-static int nrf51_nmi(int irq, FAR void *context, FAR void *arg)
+static int nuc_nmi(int irq, FAR void *context, FAR void *arg)
 {
   (void)up_irq_save();
   _err("PANIC!!! NMI received\n");
@@ -162,23 +146,7 @@ static int nrf51_nmi(int irq, FAR void *context, FAR void *arg)
   return 0;
 }
 
-static int nrf51_busfault(int irq, FAR void *context, FAR void *arg)
-{
-  (void)up_irq_save();
-  _err("PANIC!!! Bus fault received\n");
-  PANIC();
-  return 0;
-}
-
-static int nrf51_usagefault(int irq, FAR void *context, FAR void *arg)
-{
-  (void)up_irq_save();
-  _err("PANIC!!! Usage fault received\n");
-  PANIC();
-  return 0;
-}
-
-static int nrf51_pendsv(int irq, FAR void *context, FAR void *arg)
+static int nuc_pendsv(int irq, FAR void *context, FAR void *arg)
 {
   (void)up_irq_save();
   _err("PANIC!!! PendSV received\n");
@@ -186,15 +154,7 @@ static int nrf51_pendsv(int irq, FAR void *context, FAR void *arg)
   return 0;
 }
 
-static int nrf51_dbgmonitor(int irq, FAR void *context, FAR void *arg)
-{
-  (void)up_irq_save();
-  _err("PANIC!!! Debug Monitor received\n");
-  PANIC();
-  return 0;
-}
-
-static int nrf51_reserved(int irq, FAR void *context, FAR void *arg)
+static int nuc_reserved(int irq, FAR void *context, FAR void *arg)
 {
   (void)up_irq_save();
   _err("PANIC!!! Reserved interrupt\n");
@@ -204,82 +164,31 @@ static int nrf51_reserved(int irq, FAR void *context, FAR void *arg)
 #endif
 
 /****************************************************************************
- * Name: nrf51_prioritize_syscall
+ * Name: nuc_clrpend
  *
  * Description:
- *   Set the priority of an exception.  This function may be needed
- *   internally even if support for prioritized interrupts is not enabled.
+ *   Clear a pending interrupt at the NVIC.
  *
  ****************************************************************************/
 
-#ifdef CONFIG_ARMV7M_USEBASEPRI
-static inline void nrf51_prioritize_syscall(int priority)
+static inline void nuc_clrpend(int irq)
 {
-  uint32_t regval;
+  /* This will be called on each interrupt exit whether the interrupt can be
+   * enambled or not.  So this assertion is necessarily lame.
+   */
 
-  /* SVCALL is system handler 11 */
+  DEBUGASSERT((unsigned)irq < NR_IRQS);
 
-  regval  = getreg32(NVIC_SYSH8_11_PRIORITY);
-  regval &= ~NVIC_SYSH_PRIORITY_PR11_MASK;
-  regval |= (priority << NVIC_SYSH_PRIORITY_PR11_SHIFT);
-  putreg32(regval, NVIC_SYSH8_11_PRIORITY);
-}
-#endif
+  /* Check for an external interrupt */
 
-/****************************************************************************
- * Name: nrf51_irqinfo
- *
- * Description:
- *   Given an IRQ number, provide the register and bit setting to enable or
- *   disable the irq.
- *
- ****************************************************************************/
-
-static int nrf51_irqinfo(int irq, uintptr_t *regaddr, uint32_t *bit,
-                         uintptr_t offset)
-{
-  int n;
-
-  DEBUGASSERT(irq >= NRF51_IRQ_NMI && irq < NR_IRQS);
-
-  /* Check for external interrupt */
-
-  if (irq >= NRF51_IRQ_EXTINT)
+  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
     {
-      n        = irq - NRF51_IRQ_EXTINT;
-      *regaddr = NVIC_IRQ_ENABLE(n) + offset;
-      *bit     = (uint32_t)1 << (n & 0x1f);
+      /* Set the appropriate bit in the ISER register to enable the
+       * interrupt
+       */
+
+      putreg32((1 << (irq - NUC_IRQ_INTERRUPT)), ARMV6M_NVIC_ICPR);
     }
-
-  /* Handle processor exceptions.  Only a few can be disabled */
-
-  else
-    {
-      *regaddr = NVIC_SYSHCON;
-      if (irq == NRF51_IRQ_MEMFAULT)
-        {
-          *bit = NVIC_SYSHCON_MEMFAULTENA;
-        }
-      else if (irq == NRF51_IRQ_BUSFAULT)
-        {
-          *bit = NVIC_SYSHCON_BUSFAULTENA;
-        }
-      else if (irq == NRF51_IRQ_USAGEFAULT)
-        {
-          *bit = NVIC_SYSHCON_USGFAULTENA;
-        }
-      else if (irq == NRF51_IRQ_SYSTICK)
-        {
-          *regaddr = NVIC_SYSTICK_CTRL;
-          *bit = NVIC_SYSTICK_CTRL_ENABLE;
-        }
-      else
-        {
-          return ERROR; /* Invalid or unsupported exception */
-        }
-    }
-
-  return OK;
 }
 
 /****************************************************************************
@@ -288,70 +197,28 @@ static int nrf51_irqinfo(int irq, uintptr_t *regaddr, uint32_t *bit,
 
 /****************************************************************************
  * Name: up_irqinitialize
- *
- * Description:
- *   Complete initialization of the interrupt system and enable normal,
- *   interrupt processing.
- *
  ****************************************************************************/
 
 void up_irqinitialize(void)
 {
   uint32_t regaddr;
-#ifdef CONFIG_DEBUG_FEATURES
-  uint32_t regval;
-#endif
-  int num_priority_registers;
   int i;
 
   /* Disable all interrupts */
 
-  for (i = 0; i < NRF51_IRQ_NEXTINT; i += 32)
-    {
-      putreg32(0xffffffff, NVIC_IRQ_CLEAR(i));
-    }
-
-  /* Make sure that we are using the correct vector table.  The default
-   * vector address is 0x0000:0000 but if we are executing code that is
-   * positioned in SRAM or in external FLASH, then we may need to reset
-   * the interrupt vector so that it refers to the table in SRAM or in
-   * external FLASH.
-   */
-
-  putreg32((uint32_t)_vectors, NVIC_VECTAB);
-
-#ifdef CONFIG_ARCH_RAMVECTORS
-  /* If CONFIG_ARCH_RAMVECTORS is defined, then we are using a RAM-based
-   * vector table that requires special initialization.
-   */
-
-  up_ramvec_initialize();
-#endif
+  putreg32(0xffffffff, ARMV6M_NVIC_ICER);
 
   /* Set all interrupts (and exceptions) to the default priority */
 
-  putreg32(DEFPRIORITY32, NVIC_SYSH4_7_PRIORITY);
-  putreg32(DEFPRIORITY32, NVIC_SYSH8_11_PRIORITY);
-  putreg32(DEFPRIORITY32, NVIC_SYSH12_15_PRIORITY);
-
-  /* The NVIC ICTR register (bits 0-4) holds the number of of interrupt
-   * lines that the NVIC supports:
-   *
-   *  0 -> 32 interrupt lines,  8 priority registers
-   *  1 -> 64 "       " "   ", 16 priority registers
-   *  2 -> 96 "       " "   ", 32 priority registers
-   *  ...
-   */
-
-  num_priority_registers = (getreg32(NVIC_ICTR) + 1) * 8;
+  putreg32(DEFPRIORITY32, ARMV6M_SYSCON_SHPR2);
+  putreg32(DEFPRIORITY32, ARMV6M_SYSCON_SHPR3);
 
   /* Now set all of the interrupt lines to the default priority */
 
-  regaddr = NVIC_IRQ0_3_PRIORITY;
-  while (num_priority_registers--)
+  for (i = 0; i < 8; i++)
     {
+      regaddr = ARMV6M_NVIC_IPR(i);
       putreg32(DEFPRIORITY32, regaddr);
-      regaddr += 4;
     }
 
   /* currents_regs is non-NULL only while processing an interrupt */
@@ -364,62 +231,21 @@ void up_irqinitialize(void)
    * under certain conditions.
    */
 
-  irq_attach(NRF51_IRQ_SVCALL, up_svcall, NULL);
-  irq_attach(NRF51_IRQ_HARDFAULT, up_hardfault, NULL);
-
-  /* Set the priority of the SVCall interrupt */
-
-#ifdef CONFIG_ARCH_IRQPRIO
-  /* up_prioritize_irq(NRF51_IRQ_PENDSV, NVIC_SYSH_PRIORITY_MIN); */
-#endif
-
-#ifdef CONFIG_ARMV7M_USEBASEPRI
-  nrf51_prioritize_syscall(NVIC_SYSH_SVCALL_PRIORITY);
-#endif
-
-// #ifdef CONFIG_ARM_MPU
-//   /* If the MPU is enabled, then attach and enable the Memory Management
-//    * Fault handler.
-//    */
-
-//   irq_attach(NRF51_IRQ_MEMFAULT, up_memfault, NULL);
-//   up_enable_irq(NRF51_IRQ_MEMFAULT);
-// #endif
+  irq_attach(NUC_IRQ_SVCALL, up_svcall, NULL);
+  irq_attach(NUC_IRQ_HARDFAULT, up_hardfault, NULL);
 
   /* Attach all other processor exceptions (except reset and sys tick) */
 
 #ifdef CONFIG_DEBUG_FEATURES
-  irq_attach(NRF51_IRQ_NMI, nrf51_nmi, NULL);
-#ifndef CONFIG_ARM_MPU
-  // irq_attach(NRF51_IRQ_MEMFAULT, up_memfault, NULL);
-#endif
-  // irq_attach(NRF51_IRQ_BUSFAULT, nrf51_busfault, NULL);
-  // irq_attach(NRF51_IRQ_USAGEFAULT, nrf51_usagefault, NULL);
-  irq_attach(NRF51_IRQ_PENDSV, nrf51_pendsv, NULL);
-  // irq_attach(NRF51_IRQ_DBGMONITOR, nrf51_dbgmonitor, NULL);
-  irq_attach(NRF51_IRQ_RESERVED, nrf51_reserved, NULL);
+  irq_attach(NUC_IRQ_NMI, nuc_nmi, NULL);
+  irq_attach(NUC_IRQ_PENDSV, nuc_pendsv, NULL);
+  irq_attach(NUC_IRQ_RESERVED, nuc_reserved, NULL);
 #endif
 
-  nrf51_dumpnvic("initial", NRF51_IRQ_NIRQS);
-
-#if defined(CONFIG_DEBUG_FEATURES) && !defined(CONFIG_ARMV7M_USEBASEPRI)
-  /* If a debugger is connected, try to prevent it from catching hardfaults.
-   * If CONFIG_ARMV7M_USEBASEPRI, no hardfaults are expected in normal
-   * operation.
-   */
-
-  regval  = getreg32(NVIC_DEMCR);
-  regval &= ~NVIC_DEMCR_VCHARDERR;
-  putreg32(regval, NVIC_DEMCR);
-#endif
-
-#ifdef CONFIG_NRF51_GPIOIRQ
-  /* Initialize GPIO interrupts */
-
-  nrf51_gpio_irqinitialize();
-#endif
+  nuc_dumpnvic("initial", NR_IRQS);
 
 #ifndef CONFIG_SUPPRESS_INTERRUPTS
+
   /* And finally, enable interrupts */
 
   up_irq_enable();
@@ -436,31 +262,27 @@ void up_irqinitialize(void)
 
 void up_disable_irq(int irq)
 {
-  uintptr_t regaddr;
-  uint32_t regval;
-  uint32_t bit;
+  DEBUGASSERT((unsigned)irq < NR_IRQS);
 
-  if (nrf51_irqinfo(irq, &regaddr, &bit, NVIC_CLRENA_OFFSET) == 0)
+  /* Check for an external interrupt */
+
+  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
     {
-      /* Modify the appropriate bit in the register to disable the interrupt.
-       * For normal interrupts, we need to set the bit in the associated
-       * Interrupt Clear Enable register.  For other exceptions, we need to
-       * clear the bit in the System Handler Control and State Register.
+      /* Set the appropriate bit in the ICER register to disable the
+       * interrupt
        */
 
-      if (irq >= NRF51_IRQ_EXTINT)
-        {
-          putreg32(bit, regaddr);
-        }
-      else
-        {
-          regval  = getreg32(regaddr);
-          regval &= ~bit;
-          putreg32(regval, regaddr);
-        }
+      putreg32((1 << (irq - NUC_IRQ_INTERRUPT)), ARMV6M_NVIC_ICER);
     }
 
-  nrf51_dumpnvic("disable", irq);
+  /* Handle processor exceptions.  Only SysTick can be disabled */
+
+  else if (irq == NUC_IRQ_SYSTICK)
+    {
+      modifyreg32(ARMV6M_SYSTICK_CSR, SYSTICK_CSR_ENABLE, 0);
+    }
+
+  nuc_dumpnvic("disable", irq);
 }
 
 /****************************************************************************
@@ -473,31 +295,31 @@ void up_disable_irq(int irq)
 
 void up_enable_irq(int irq)
 {
-  uintptr_t regaddr;
-  uint32_t regval;
-  uint32_t bit;
+  /* This will be called on each interrupt exit whether the interrupt can be
+   * enambled or not.  So this assertion is necessarily lame.
+   */
 
-  if (nrf51_irqinfo(irq, &regaddr, &bit, NVIC_ENA_OFFSET) == 0)
+  DEBUGASSERT((unsigned)irq < NR_IRQS);
+
+  /* Check for external interrupt */
+
+  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
     {
-      /* Modify the appropriate bit in the register to enable the interrupt.
-       * For normal interrupts, we need to set the bit in the associated
-       * Interrupt Set Enable register.  For other exceptions, we need to
-       * set the bit in the System Handler Control and State Register.
+      /* Set the appropriate bit in the ISER register to enable the
+       * interrupt
        */
 
-      if (irq >= NRF51_IRQ_EXTINT)
-        {
-          putreg32(bit, regaddr);
-        }
-      else
-        {
-          regval  = getreg32(regaddr);
-          regval |= bit;
-          putreg32(regval, regaddr);
-        }
+      putreg32((1 << (irq - NUC_IRQ_INTERRUPT)), ARMV6M_NVIC_ISER);
     }
 
-  nrf51_dumpnvic("enable", irq);
+  /* Handle processor exceptions.  Only SysTick can be disabled */
+
+  else if (irq == NUC_IRQ_SYSTICK)
+    {
+      modifyreg32(ARMV6M_SYSTICK_CSR, 0, SYSTICK_CSR_ENABLE);
+    }
+
+  nuc_dumpnvic("enable", irq);
 }
 
 /****************************************************************************
@@ -510,7 +332,7 @@ void up_enable_irq(int irq)
 
 void up_ack_irq(int irq)
 {
-  nrf51_clrpend(irq);
+  nuc_clrpend(irq);
 }
 
 /****************************************************************************
@@ -531,33 +353,53 @@ int up_prioritize_irq(int irq, int priority)
   uint32_t regval;
   int shift;
 
-  DEBUGASSERT(irq >= NRF51_IRQ_MEMFAULT && irq < NR_IRQS &&
-              (unsigned)priority <= NVIC_SYSH_PRIORITY_MIN);
+  DEBUGASSERT(irq == NUC_IRQ_SVCALL ||
+              irq == NUC_IRQ_PENDSV ||
+              irq == NUC_IRQ_SYSTICK ||
+             (irq >= NUC_IRQ_INTERRUPT && irq < NR_IRQS));
+  DEBUGASSERT(priority >= NVIC_SYSH_PRIORITY_MAX &&
+              priority <= NVIC_SYSH_PRIORITY_MIN);
 
-  if (irq < NRF51_IRQ_EXTINT)
+  /* Check for external interrupt */
+
+  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
     {
-      /* NVIC_SYSH_PRIORITY() maps {0..15} to one of three priority
-       * registers (0-3 are invalid)
+      /* ARMV6M_NVIC_IPR() maps register IPR0-IPR7 with four settings per
+       * register.
        */
 
-      regaddr = NVIC_SYSH_PRIORITY(irq);
-      irq    -= 4;
+      regaddr = ARMV6M_NVIC_IPR(irq >> 2);
+      shift   = (irq & 3) << 3;
+    }
+
+  /* Handle processor exceptions.  Only SVCall, PendSV, and SysTick can be
+   * reprioritized.  And we will not permit modification of SVCall through
+   * this function.
+   */
+
+  else if (irq == NUC_IRQ_PENDSV)
+    {
+      regaddr = ARMV6M_SYSCON_SHPR2;
+      shift   = SYSCON_SHPR3_PRI_14_SHIFT;
+    }
+  else if (irq == NUC_IRQ_SYSTICK)
+    {
+      regaddr = ARMV6M_SYSCON_SHPR2;
+      shift   = SYSCON_SHPR3_PRI_15_SHIFT;
     }
   else
     {
-      /* NVIC_IRQ_PRIORITY() maps {0..} to one of many priority registers */
-
-      irq    -= NRF51_IRQ_EXTINT;
-      regaddr = NVIC_IRQ_PRIORITY(irq);
+      return ERROR;
     }
 
-  regval      = getreg32(regaddr);
-  shift       = ((irq & 3) << 3);
-  regval     &= ~(0xff << shift);
-  regval     |= (priority << shift);
+  /* Set the priority */
+
+  regval  = getreg32(regaddr);
+  regval &= ~((uint32_t)0xff << shift);
+  regval |= ((uint32_t)priority << shift);
   putreg32(regval, regaddr);
 
-  nrf51_dumpnvic("prioritize", irq);
+  nuc_dumpnvic("prioritize", irq);
   return OK;
 }
 #endif
