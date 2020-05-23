@@ -181,13 +181,13 @@ static inline void nuc_clrpend(int irq)
 
   /* Check for an external interrupt */
 
-  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
+  if (irq >= NRF51_IRQ_EXTINT && irq < NRF51_IRQ_EXTINT + 32)
     {
       /* Set the appropriate bit in the ISER register to enable the
        * interrupt
        */
 
-      putreg32((1 << (irq - NUC_IRQ_INTERRUPT)), ARMV6M_NVIC_ICPR);
+      putreg32((1 << (irq - NRF51_IRQ_EXTINT)), ARMV6M_NVIC_ICPR);
     }
 }
 
@@ -266,13 +266,13 @@ void up_disable_irq(int irq)
 
   /* Check for an external interrupt */
 
-  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
+  if (irq >= NRF51_IRQ_EXTINT && irq < NRF51_IRQ_EXTINT + 32)
     {
       /* Set the appropriate bit in the ICER register to disable the
        * interrupt
        */
 
-      putreg32((1 << (irq - NUC_IRQ_INTERRUPT)), ARMV6M_NVIC_ICER);
+      putreg32((1 << (irq - NRF51_IRQ_EXTINT)), ARMV6M_NVIC_ICER);
     }
 
   /* Handle processor exceptions.  Only SysTick can be disabled */
@@ -303,13 +303,13 @@ void up_enable_irq(int irq)
 
   /* Check for external interrupt */
 
-  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
+  if (irq >= NRF51_IRQ_EXTINT && irq < NRF51_IRQ_EXTINT + 32)
     {
       /* Set the appropriate bit in the ISER register to enable the
        * interrupt
        */
 
-      putreg32((1 << (irq - NUC_IRQ_INTERRUPT)), ARMV6M_NVIC_ISER);
+      putreg32((1 << (irq - NRF51_IRQ_EXTINT)), ARMV6M_NVIC_ISER);
     }
 
   /* Handle processor exceptions.  Only SysTick can be disabled */
@@ -356,13 +356,13 @@ int up_prioritize_irq(int irq, int priority)
   DEBUGASSERT(irq == NUC_IRQ_SVCALL ||
               irq == NUC_IRQ_PENDSV ||
               irq == NUC_IRQ_SYSTICK ||
-             (irq >= NUC_IRQ_INTERRUPT && irq < NR_IRQS));
+             (irq >= NRF51_IRQ_EXTINT && irq < NR_IRQS));
   DEBUGASSERT(priority >= NVIC_SYSH_PRIORITY_MAX &&
               priority <= NVIC_SYSH_PRIORITY_MIN);
 
   /* Check for external interrupt */
 
-  if (irq >= NUC_IRQ_INTERRUPT && irq < NUC_IRQ_INTERRUPT + 32)
+  if (irq >= NRF51_IRQ_EXTINT && irq < NRF51_IRQ_EXTINT + 32)
     {
       /* ARMV6M_NVIC_IPR() maps register IPR0-IPR7 with four settings per
        * register.
