@@ -46,7 +46,7 @@
 #include <stdbool.h>
 
 #include "up_arch.h"
-#include "barriers.h"
+// #include "barriers.h"
 
 #include "hardware/nrf51_ficr.h"
 #include "hardware/nrf51_nvmc.h"
