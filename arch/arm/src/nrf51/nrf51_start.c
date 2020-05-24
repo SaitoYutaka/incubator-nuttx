@@ -221,7 +221,7 @@ void __start(void)
 #if defined(CONFIG_ARCH_FAMILY_NRF51832)
   /* Initialize the errdata work-around */
 
-  nrf51832_errdata_init();
+  // nrf51832_errdata_init();
 #endif
 
   /* Initialize the FPU (if configured) */

@@ -5,11 +5,29 @@
 
 if ARCH_BOARD_MICROBIT
 
+config NRF51_GENERIC_UART0_RX_PIN
+	int "Pin select for UART0 TXD"
+	default 23
+	---help---
+		Pin select for UART0 TXD
+
+config NRF51_GENERIC_UART0_TX_PIN
+	int "Pin select for UART0 TXD"
+	default 24
+	---help---
+		Pin select for UART0 TXD
+
 config NRF51_GENERIC_NUM_LEDS
 	int "Number of LEDs"
 	default 4
 	---help---
 		Number of LEDs
+
+config NRF51_GENERIC_LED_ACTIVELOW
+	bool "Board LEDs are 'active low'"
+	default y
+	---help---
+		Board LEDs are 'active low'
 
 config NRF51_GENERIC_LED1_PIN
 	int "Pin select for LED 1"

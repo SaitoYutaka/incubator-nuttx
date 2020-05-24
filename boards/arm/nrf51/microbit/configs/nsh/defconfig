@@ -5,13 +5,9 @@
 # You can then do "make savedefconfig" to generate a new defconfig file that includes your
 # modifications.
 #
-# CONFIG_NSH_DISABLEBG is not set
-# CONFIG_NSH_DISABLE_EXEC is not set
-# CONFIG_NSH_DISABLE_EXIT is not set
-# CONFIG_NSH_DISABLE_HEXDUMP is not set
+# CONFIG_ARCH_FPU is not set
+# CONFIG_NSH_DISABLE_IFCONFIG is not set
 # CONFIG_NSH_DISABLE_PS is not set
-# CONFIG_NSH_DISABLE_XD is not set
-# CONFIG_NUC_UART0 is not set
 CONFIG_ARCH="arm"
 CONFIG_ARCH_BOARD="microbit"
 CONFIG_ARCH_BOARD_MICROBIT=y
@@ -19,6 +15,7 @@ CONFIG_ARCH_CHIP="nrf51"
 CONFIG_ARCH_CHIP_NRF51832=y
 CONFIG_ARCH_CHIP_NRF51=y
 CONFIG_ARCH_STACKDUMP=y
+CONFIG_ARCH_STDARG_H=y
 CONFIG_BOARD_LOOPSPERMSEC=5500
 CONFIG_FAT_LCNAMES=y
 CONFIG_FAT_LFN=y

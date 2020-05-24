@@ -914,6 +914,9 @@ endif
 if ARCH_CHIP_MOXART
 source arch/arm/src/moxart/Kconfig
 endif
+if ARCH_CHIP_NRF51
+source arch/arm/src/nrf51/Kconfig
+endif
 if ARCH_CHIP_NRF52
 source arch/arm/src/nrf52/Kconfig
 endif
