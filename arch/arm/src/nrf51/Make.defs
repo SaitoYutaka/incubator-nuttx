@@ -64,3 +64,7 @@ endif
 CHIP_ASRCS  =
 CHIP_CSRCS  = nrf51_clockconfig.c nrf51_irq.c
 CHIP_CSRCS += nrf51_allocateheap.c nrf51_lowputc.c nrf51_gpio.c nrf51_nvmc.c nrf51_start.c
+
+ifneq ($(CONFIG_ARCH_IDLE_CUSTOM),y)
+CHIP_CSRCS += nrf51_idle.c
+endif
