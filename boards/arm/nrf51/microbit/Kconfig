@@ -4,4 +4,11 @@
 #
 
 if ARCH_BOARD_MICROBIT
+
+config NRF51_GENERIC_NUM_LEDS
+	int "Number of LEDs"
+	default 4
+	---help---
+		Number of LEDs
+
 endif
