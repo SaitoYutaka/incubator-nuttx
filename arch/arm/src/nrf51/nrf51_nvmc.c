@@ -187,10 +187,10 @@ void nrf_nvmc_enable_profile(bool flag)
  *
  ****************************************************************************/
 
-uint32_t nrf_nvmc_get_profiling_ihit(void)
-{
-  return getreg32(NRF51_NVMC_IHIT);
-}
+// uint32_t nrf_nvmc_get_profiling_ihit(void)
+// {
+//   return getreg32(NRF51_NVMC_IHIT);
+// }
 
 /****************************************************************************
  * Name: nrf_nvmc_get_profiling_imiss
