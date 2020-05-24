@@ -230,7 +230,7 @@ void __start(void)
 
 #ifdef CONFIG_NRF51_FLASH_PREFETCH
   // nrf_nvmc_enable_icache(true);
-  nrf_nvmc_enable_profile(true);
+  // nrf_nvmc_enable_profile(true);
 #endif
 
   showprogress('D');

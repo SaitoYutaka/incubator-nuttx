@@ -153,24 +153,24 @@ void nrf_nvmc_enable_icache(bool flag)
 
 void nrf_nvmc_enable_profile(bool flag)
 {
-  uint32_t value;
+  // uint32_t value;
 
-  /* Read the current icache configuration */
+  // /* Read the current icache configuration */
 
-  value = getreg32(NRF51_NVMC_ICACHECNF);
+  // value = getreg32(NRF51_NVMC_ICACHECNF);
 
-  if (flag)
-    {
-      value |= NVMC_ICACHECNF_CACHEPROFEN;
-    }
-  else
-    {
-      value &= ~NVMC_ICACHECNF_CACHEPROFEN;
-    }
+  // if (flag)
+  //   {
+  //     value |= NVMC_ICACHECNF_CACHEPROFEN;
+  //   }
+  // else
+  //   {
+  //     value &= ~NVMC_ICACHECNF_CACHEPROFEN;
+  //   }
 
-  /* Setup the new icache configuration */
+  // /* Setup the new icache configuration */
 
-  putreg32(value, NRF51_NVMC_ICACHECNF);
+  // putreg32(value, NRF51_NVMC_ICACHECNF);
 }
 
 /****************************************************************************
