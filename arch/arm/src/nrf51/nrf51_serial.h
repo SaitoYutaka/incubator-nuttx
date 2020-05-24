@@ -60,7 +60,7 @@
  ****************************************************************************/
 
 #ifdef USE_EARLYSERIALINIT
-void nrf51_earlyserialinit(void);
+// void nrf51_earlyserialinit(void);
 #endif
 
 #endif /* __ARCH_ARM_SRC_NRF51_NRF51_SERIAL_H */

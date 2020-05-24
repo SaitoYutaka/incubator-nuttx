@@ -548,15 +548,15 @@ static bool nrf51_txempty(struct uart_dev_s *dev)
  ****************************************************************************/
 
 #ifdef USE_EARLYSERIALINIT
-void nrf51_earlyserialinit(void)
-{
-  /* Configuration whichever one is the console */
+// void nrf51_earlyserialinit(void)
+// {
+//   /* Configuration whichever one is the console */
 
-#ifdef HAVE_UART_CONSOLE
-  CONSOLE_DEV.isconsole = true;
-  nrf51_setup(&CONSOLE_DEV);
-#endif
-}
+// #ifdef HAVE_UART_CONSOLE
+//   CONSOLE_DEV.isconsole = true;
+//   nrf51_setup(&CONSOLE_DEV);
+// #endif
+// }
 #endif
 
 /****************************************************************************
