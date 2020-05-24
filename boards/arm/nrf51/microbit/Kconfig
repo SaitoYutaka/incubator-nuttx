@@ -11,4 +11,28 @@ config NRF51_GENERIC_NUM_LEDS
 	---help---
 		Number of LEDs
 
+config NRF51_GENERIC_LED1_PIN
+	int "Pin select for LED 1"
+	default 17
+	---help---
+		Pin select for LED 1
+
+config NRF51_GENERIC_LED2_PIN
+	int "Pin select for LED 2"
+	default 18
+	---help---
+		Pin select for LED 2
+
+config NRF51_GENERIC_LED3_PIN
+	int "Pin select for LED 3"
+	default 19
+	---help---
+		Pin select for LED 3
+
+config NRF51_GENERIC_LED4_PIN
+	int "Pin select for LED 4"
+	default 20
+	---help---
+		Pin select for LED 4
+
 endif
