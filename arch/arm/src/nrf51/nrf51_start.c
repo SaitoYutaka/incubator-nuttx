@@ -235,11 +235,11 @@ void __start(void)
 
   showprogress('D');
 
-#ifdef USE_EARLYSERIALINIT
-  /* Perform early serial initialization */
+// #ifdef USE_EARLYSERIALINIT
+//   /* Perform early serial initialization */
 
-  nrf51_earlyserialinit();
-#endif
+//   nrf51_earlyserialinit();
+// #endif
   showprogress('E');
 
 #ifdef CONFIG_BUILD_PROTECTED
