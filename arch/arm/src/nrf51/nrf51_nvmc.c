@@ -206,10 +206,10 @@ void nrf_nvmc_enable_profile(bool flag)
  *
  ****************************************************************************/
 
-uint32_t nrf_nvmc_get_profiling_imiss(void)
-{
-  return getreg32(NRF51_NVMC_IMISS);
-}
+// uint32_t nrf_nvmc_get_profiling_imiss(void)
+// {
+//   return getreg32(NRF51_NVMC_IMISS);
+// }
 
 /****************************************************************************
  * Name: nrf_nvmc_get_flash_size
