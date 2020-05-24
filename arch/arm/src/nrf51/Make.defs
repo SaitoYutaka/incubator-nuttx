@@ -74,3 +74,7 @@ endif
 ifneq ($(CONFIG_ARCH_IDLE_CUSTOM),y)
 CHIP_CSRCS += nrf51_idle.c
 endif
+
+ifeq ($(CONFIG_NRF51_HAVE_UART),y)
+CHIP_CSRCS += nrf51_serial.c
+endif
