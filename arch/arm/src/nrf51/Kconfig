@@ -89,7 +89,7 @@ config NRF51_WDT
 	default n
 	select WATCHDOG
 
-config NRF52_HAVE_UART
+config NRF51_HAVE_UART
 	bool
 	default n
 
