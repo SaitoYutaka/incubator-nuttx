@@ -89,10 +89,6 @@ config NRF51_WDT
 	default n
 	select WATCHDOG
 
-config NRF51_HAVE_UART
-	bool
-	default n
-
 endmenu # NRF51 Peripheral Selection
 
 config NRF51_FLASH_PREFETCH
