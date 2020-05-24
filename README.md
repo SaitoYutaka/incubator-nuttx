@@ -2,6 +2,27 @@
 
 This file will show that how to build nuttx for micro:bit.
 
+## build and run qemu
+
+```
+$ git clone https://github.com/SaitoYutaka/incubator-nuttx.git nuttx
+$ cd nuttx
+$ ./tools/configure.sh microbit:nsh
+$ make
+$ qemu-system-arm -M microbit -device loader,file=nuttx -serial stdio
+
+NuttShell (NSH)
+nsh> 
+nsh> 
+nsh> ls
+/:
+ dev/
+```
+
+## About qemu
+
+https://www.qemu.org/2019/05/22/microbit/
+
 ## Help
 
 Please give me some advice on how to do this.
@@ -39,29 +60,43 @@ in progress.
 ```
 $ git diff 66401c8960c5211ded41ae4f60bfb1746a84bd50 --name-only
 README.md
+arch/arm/Kconfig
 arch/arm/include/nrf51/chip.h
 arch/arm/include/nrf51/irq.h
 arch/arm/include/nrf51/nrf51_irq.h
 arch/arm/src/nrf51/Kconfig
 arch/arm/src/nrf51/Make.defs
+arch/arm/src/nrf51/chip.h
 arch/arm/src/nrf51/hardware/.gitkeep
 arch/arm/src/nrf51/hardware/nrf51_clock.h
+arch/arm/src/nrf51/hardware/nrf51_ficr.h
 arch/arm/src/nrf51/hardware/nrf51_gpio.h
 arch/arm/src/nrf51/hardware/nrf51_memorymap.h
+arch/arm/src/nrf51/hardware/nrf51_nvmc.h
 arch/arm/src/nrf51/hardware/nrf51_uarte.h
+arch/arm/src/nrf51/hardware/nrf51_utils.h
 arch/arm/src/nrf51/hardware/nrf51_wdt.h
 arch/arm/src/nrf51/nrf51_allocateheap.c
+arch/arm/src/nrf51/nrf51_clockconfig.c
+arch/arm/src/nrf51/nrf51_clockconfig.h
+arch/arm/src/nrf51/nrf51_config.h
 arch/arm/src/nrf51/nrf51_gpio.c
 arch/arm/src/nrf51/nrf51_gpio.h
+arch/arm/src/nrf51/nrf51_idle.c
 arch/arm/src/nrf51/nrf51_irq.c
 arch/arm/src/nrf51/nrf51_irq.h
 arch/arm/src/nrf51/nrf51_lowputc.c
 arch/arm/src/nrf51/nrf51_lowputc.h
+arch/arm/src/nrf51/nrf51_nvmc.c
+arch/arm/src/nrf51/nrf51_nvmc.h
+arch/arm/src/nrf51/nrf51_serial.c
+arch/arm/src/nrf51/nrf51_serial.h
 arch/arm/src/nrf51/nrf51_start.c
 arch/arm/src/nrf51/nrf51_start.h
 arch/arm/src/nrf51/nrf51_timerisr.c
 arch/arm/src/nrf51/nrf51_utils.c
 boards/Kconfig
+boards/arm/nrf51/drivers/Kconfig
 boards/arm/nrf51/microbit/Kconfig
 boards/arm/nrf51/microbit/README.txt
 boards/arm/nrf51/microbit/configs/nsh/.gitkeep
@@ -80,6 +115,7 @@ boards/arm/nrf51/microbit/src/nrf51_boot.c
 boards/arm/nrf51/microbit/src/nrf51_bringup.c
 boards/arm/nrf51/microbit/src/nrf51_buttons.c
 boards/arm/nrf51/microbit/src/nrf51_userleds.c
+tools/configure.sh
 ```
 
 
