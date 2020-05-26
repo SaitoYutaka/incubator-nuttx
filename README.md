@@ -12,22 +12,27 @@ $ make
 $ qemu-system-arm -M microbit -device loader,file=nuttx -serial stdio
 
 NuttShell (NSH)
-nsh> 
-nsh> 
 nsh> ls
 /:
  dev/
+nsh> help
+help usage:  help [-v] [<cmd>]
+
+  [         cd        echo      hexdump   mkfatfs   mw        sh        uname     
+  ?         cp        exec      kill      mkrd      pwd       sleep     umount    
+  basename  cmp       exit      ls        mh        rm        test      unset     
+  break     dirname   false     mb        mount     rmdir     time      usleep    
+  cat       dd        help      mkdir     mv        set       true      xd        
+
+Builtin Apps:
+  hello  nsh    
+nsh> hello
+Hello, World!!
 ```
 
 ## About qemu
 
 https://www.qemu.org/2019/05/22/microbit/
-
-## Help
-
-Please give me some advice on how to do this.
-
-If so, please send me on https://github.com/SaitoYutaka/incubator-nuttx/issues .
 
 ## Why
 
@@ -37,7 +42,7 @@ Just my study.
 
 in progress.
 
-## Step1
+## Memo
 ### About micro:bit
 
 #### Hardware
