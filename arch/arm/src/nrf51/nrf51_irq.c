@@ -83,7 +83,7 @@ volatile uint32_t *g_current_regs[1];
  ****************************************************************************/
 
 /****************************************************************************
- * Name: nuc_dumpnvic
+ * Name: nrf51_dumpnvic
  *
  * Description:
  *   Dump some interesting NVIC registers
@@ -91,7 +91,7 @@ volatile uint32_t *g_current_regs[1];
  ****************************************************************************/
 
 #if defined(CONFIG_DEBUG_IRQ_INFO)
-static void nuc_dumpnvic(const char *msg, int irq)
+static void nrf51_dumpnvic(const char *msg, int irq)
 {
   irqstate_t flags;
 
@@ -123,7 +123,7 @@ static void nuc_dumpnvic(const char *msg, int irq)
 }
 
 #else
-#  define nuc_dumpnvic(msg, irq)
+#  define nrf51_dumpnvic(msg, irq)
 #endif
 
 /****************************************************************************
@@ -237,12 +237,12 @@ void up_irqinitialize(void)
   /* Attach all other processor exceptions (except reset and sys tick) */
 
 #ifdef CONFIG_DEBUG_FEATURES
-  irq_attach(NUC_IRQ_NMI, nuc_nmi, NULL);
-  irq_attach(NUC_IRQ_PENDSV, nuc_pendsv, NULL);
-  irq_attach(NUC_IRQ_RESERVED, nuc_reserved, NULL);
+  irq_attach(NRF51_IRQ_NMI, nuc_nmi, NULL);
+  irq_attach(NRF51_IRQ_PENDSV, nuc_pendsv, NULL);
+  irq_attach(NRF51_IRQ_RESERVED, nuc_reserved, NULL);
 #endif
 
-  nuc_dumpnvic("initial", NR_IRQS);
+  nrf51_dumpnvic("initial", NR_IRQS);
 
 #ifndef CONFIG_SUPPRESS_INTERRUPTS
 
@@ -282,7 +282,7 @@ void up_disable_irq(int irq)
       modifyreg32(ARMV6M_SYSTICK_CSR, SYSTICK_CSR_ENABLE, 0);
     }
 
-  nuc_dumpnvic("disable", irq);
+  nrf51_dumpnvic("disable", irq);
 }
 
 /****************************************************************************
@@ -319,7 +319,7 @@ void up_enable_irq(int irq)
       modifyreg32(ARMV6M_SYSTICK_CSR, 0, SYSTICK_CSR_ENABLE);
     }
 
-  nuc_dumpnvic("enable", irq);
+  nrf51_dumpnvic("enable", irq);
 }
 
 /****************************************************************************
@@ -399,7 +399,7 @@ int up_prioritize_irq(int irq, int priority)
   regval |= ((uint32_t)priority << shift);
   putreg32(regval, regaddr);
 
-  nuc_dumpnvic("prioritize", irq);
+  nrf51_dumpnvic("prioritize", irq);
   return OK;
 }
 #endif
