@@ -189,7 +189,10 @@ void __start(void)
    * output as soon as possible.  NOTE: That this logic must not assume that
    * .bss or .data have beeninitialized.
    */
-
+  // *(uint32_t volatile *)0x40000504 = 0xC007FFDF;
+  // *(uint32_t volatile *)0x40006C18 = 0x00008000;
+  // *(uint32_t volatile *)0x40000608 = 0x00000001;
+  
   nrf51_clockconfig();
   nrf51_lowsetup();
   showprogress('A');

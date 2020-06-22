@@ -50,42 +50,10 @@
 #include "clock/clock.h"
 #include "up_internal.h"
 #include "up_arch.h"
-
+#include "nrf51_rtc.h"
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
-
-/* The SysTick clock may be clocked internally either by the by the system
- * clock (CLKSOURCE==1) or by the SysTick function clock (CLKSOURCE==0).
- * The SysTick Function clock is equal to:
- *
- *   Fsystick = Fmainclk / SYSTICKCLKDIV
- *
- * Both the divider value (BOARD_SYSTICKCLKDIV) and the resulting SysTick
- * function clock frequency (Fsystick, BOARD_SYSTICK_CLOCK)
- *
- * The desired timer interrupt frequency is provided by the definition
- * CLK_TCK (see include/time.h).  CLK_TCK defines the desired number of
- * system clock ticks per second.  That value is a user configurable setting
- * that defaults to 100 (100 ticks per second = 10 MS interval).
- *
- *    reload = (Fsystick / CLK_TICK) - 1
- *
- * Tips for selecting BOARD_SYSTICKCLKDIV:  The resulting reload value
- * should be as large as possible, but must be less than 2^24:
- *
- *   SYSTICKDIV > Fmainclk / CLK_TCK / 2^24
- */
-
-#define SYSTICK_RELOAD ((BOARD_SYSTICK_CLOCK / CLK_TCK) - 1)
-
-/* The size of the reload field is 24 bits.  Verify that the reload value
- * will fit in the reload register.
- */
-
-#if SYSTICK_RELOAD > 0x00ffffff
-#  error SYSTICK_RELOAD exceeds the range of the RELOAD register
-#endif
 
 /****************************************************************************
  * Private Functions
@@ -102,9 +70,12 @@
 
 static int nrf51_timerisr(int irq, uint32_t *regs, void *arg)
 {
-  /* Process timer interrupt */
+  if(getreg32(NRF51_RTC1_TICK)){
+    putreg32(0x0, NRF51_RTC1_TICK);
+    putreg32(NRF51_RTC1_BIT_TICK, NRF51_RTC1_EVTENCLR); // clear
+    nxsched_process_timer();
+  }
 
-  nxsched_process_timer();
   return 0;
 }
 
@@ -123,25 +94,32 @@ static int nrf51_timerisr(int irq, uint32_t *regs, void *arg)
 
 void arm_timer_initialize(void)
 {
-  uint32_t regval;
-  /* Set the SysTick interrupt to the default priority */
+  tmrinfo("wait run sata %x\n", getreg32(0x40000418));
 
-  regval = getreg32(ARMV6M_SYSCON_SHPR3);
-  regval &= ~SYSCON_SHPR3_PRI_15_MASK;
-  regval |= (NVIC_SYSH_PRIORITY_DEFAULT << SYSCON_SHPR3_PRI_15_SHIFT);
-  putreg32(regval, ARMV6M_SYSCON_SHPR3);
+  tmrinfo("LFCLKSTOP\n");
+  putreg32(1, 0x4000000C); // LFCLKSTOP
 
-  /* Configure SysTick to interrupt at the requested rate */
+  while((getreg32(0x40000418) & 0x00010000) != 0x00000000)
+  {
+      tmrinfo("wait stop 1\n");
+  }
 
-  putreg32(SYSTICK_RELOAD, ARMV6M_SYSTICK_RVR);
+  putreg32(2, 0x40000518); // LFCLKSRC
+  putreg32(0, 0x40000514); // LFCLKSTARTED
+  putreg32(1, 0x40000008); // LFCLKSTART
+  while (getreg32(0x40000418) == 0)
+  {
+      tmrinfo("wait stop 2\n");
+  }
+  putreg32(0, 0x40000514); // LFCLKSTARTED
 
-  /* Attach the timer interrupt vector */
+  (void)irq_attach(NRF51_IRQ_RTC1, (xcpt_t)nrf51_timerisr, NULL);
+  up_enable_irq(NRF51_IRQ_RTC1);
 
-  (void)irq_attach(NRF51_IRQ_SYSTICK, (xcpt_t)nrf51_timerisr, NULL);
+  putreg32(327, NRF51_RTC1_PRESCALER); // PRESCALER
 
-  putreg32((SYSTICK_CSR_TICKINT | SYSTICK_CSR_ENABLE), ARMV6M_SYSTICK_CSR);
-
-  /* And enable the timer interrupt */
-
-  up_enable_irq(NRF51_IRQ_SYSTICK);
+  putreg32(NRF51_RTC1_BIT_TICK, NRF51_RTC1_INTENCLR); // INTENCLR
+  putreg32(NRF51_RTC1_BIT_TICK, NRF51_RTC1_INTEN); // EVTENSET
+  putreg32(NRF51_RTC1_BIT_TICK, NRF51_RTC1_INTENSET); // EVTENSET
+  putreg32(1, NRF51_RTC1_START); // START
 }

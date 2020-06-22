@@ -201,7 +201,6 @@ static inline void nuc_clrpend(int irq)
 
 void up_irqinitialize(void)
 {
-  uint32_t regaddr;
   int i;
 
   /* Disable all interrupts */
@@ -215,11 +214,14 @@ void up_irqinitialize(void)
 
   /* Now set all of the interrupt lines to the default priority */
 
-  for (i = 0; i < 8; i++)
-    {
-      regaddr = ARMV6M_NVIC_IPR(i);
-      putreg32(DEFPRIORITY32, regaddr);
-    }
+  putreg32(DEFPRIORITY32, ARMV6M_NVIC_IPR(0));
+  putreg32(DEFPRIORITY32, ARMV6M_NVIC_IPR(1));
+  putreg32(DEFPRIORITY32, ARMV6M_NVIC_IPR(2));
+  putreg32(DEFPRIORITY32, ARMV6M_NVIC_IPR(3));
+  putreg32(0x8080C080,    ARMV6M_NVIC_IPR(4));
+  putreg32(DEFPRIORITY32, ARMV6M_NVIC_IPR(5));
+  putreg32(DEFPRIORITY32, ARMV6M_NVIC_IPR(6));
+  putreg32(DEFPRIORITY32, ARMV6M_NVIC_IPR(7));
 
   /* currents_regs is non-NULL only while processing an interrupt */
 
@@ -237,9 +239,9 @@ void up_irqinitialize(void)
   /* Attach all other processor exceptions (except reset and sys tick) */
 
 #ifdef CONFIG_DEBUG_FEATURES
-  irq_attach(NRF51_IRQ_NMI, nuc_nmi, NULL);
-  irq_attach(NRF51_IRQ_PENDSV, nuc_pendsv, NULL);
-  irq_attach(NRF51_IRQ_RESERVED, nuc_reserved, NULL);
+  // irq_attach(NRF51_IRQ_NMI, nuc_nmi, NULL);
+  // irq_attach(NRF51_IRQ_PENDSV, nuc_pendsv, NULL);
+  // irq_attach(NRF51_IRQ_RESERVED, nuc_reserved, NULL);
 #endif
 
   nrf51_dumpnvic("initial", NR_IRQS);
