@@ -62,10 +62,8 @@
 
 /* Board supports four buttons. */
 
-#define GPIO_BUTTON1 (GPIO_INPUT | GPIO_PULLUP | GPIO_PIN13)
-#define GPIO_BUTTON2 (GPIO_INPUT | GPIO_PULLUP | GPIO_PIN14)
-#define GPIO_BUTTON3 (GPIO_INPUT | GPIO_PULLUP | GPIO_PIN15)
-#define GPIO_BUTTON4 (GPIO_INPUT | GPIO_PULLUP | GPIO_PIN16)
+#define GPIO_BUTTONA (GPIO_INPUT | GPIO_PULLUP | GPIO_PIN17)
+#define GPIO_BUTTONB (GPIO_INPUT | GPIO_PULLUP | GPIO_PIN26)
 
 /****************************************************************************
  * Public Types

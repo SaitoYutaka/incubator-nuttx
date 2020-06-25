@@ -235,9 +235,9 @@ int nrf51_gpio_config(nrf51_pinset_t cfgset);
  *
  ************************************************************************************/
 
-#ifdef CONFIG_NRF51_GPIOIRQ
-int nrf51_gpio_interrupt(nrf51_pinset_t pinset);
-#endif
+// #ifdef CONFIG_NRF51_GPIOIRQ
+// int nrf51_gpio_interrupt(nrf51_pinset_t pinset);
+// #endif
 
 /************************************************************************************
  * Name: nrf51_gpio_irqno

@@ -51,7 +51,7 @@
 #include "up_internal.h"
 
 #include "nrf51_irq.h"
-
+#include "nrf51_gpio.h"
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -201,8 +201,6 @@ static inline void nuc_clrpend(int irq)
 
 void up_irqinitialize(void)
 {
-  int i;
-
   /* Disable all interrupts */
 
   putreg32(0xffffffff, ARMV6M_NVIC_ICER);
@@ -245,6 +243,13 @@ void up_irqinitialize(void)
 #endif
 
   nrf51_dumpnvic("initial", NR_IRQS);
+
+#ifdef CONFIG_NRF51_GPIOIRQ
+  /* Initialize GPIO interrupts */
+
+  nrf51_gpio_irqinitialize();
+#endif
+
 
 #ifndef CONFIG_SUPPRESS_INTERRUPTS
 

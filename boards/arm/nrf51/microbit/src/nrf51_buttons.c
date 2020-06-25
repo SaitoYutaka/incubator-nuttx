@@ -62,10 +62,8 @@
 
 static const uint32_t g_buttons[NUM_BUTTONS] =
 {
-  GPIO_BUTTON1,
-  GPIO_BUTTON2,
-  GPIO_BUTTON3,
-  GPIO_BUTTON4
+  GPIO_BUTTONA,
+  GPIO_BUTTONB,
 };
 
 /****************************************************************************
@@ -86,7 +84,7 @@ static const uint32_t g_buttons[NUM_BUTTONS] =
 void board_button_initialize(void)
 {
   int i;
-
+  iinfo("board_button_initialize\n");
   /* Configure the GPIO pins as inputs. */
 
   for (i = 0; i < NUM_BUTTONS; i++)
@@ -102,27 +100,17 @@ void board_button_initialize(void)
 uint32_t board_buttons(void)
 {
   uint32_t ret = 0;
-
+  iinfo("board_buttons\n");
   /* Check that state of each key */
 
-  if (!nrf51_gpio_read(g_buttons[BUTTON_BTN1]))
+  if (!nrf51_gpio_read(g_buttons[BUTTON_BTNA]))
     {
-      ret |= BUTTON_BTN1_BIT;
+      ret |= BUTTON_BTNA_BIT;
     }
 
-  if (!nrf51_gpio_read(g_buttons[BUTTON_BTN2]))
+  if (!nrf51_gpio_read(g_buttons[BUTTON_BTNB]))
     {
-      ret |= BUTTON_BTN2_BIT;
-    }
-
-  if (!nrf51_gpio_read(g_buttons[BUTTON_BTN3]))
-    {
-      ret |= BUTTON_BTN3_BIT;
-    }
-
-  if (!nrf51_gpio_read(g_buttons[BUTTON_BTN4]))
-    {
-      ret |= BUTTON_BTN4_BIT;
+      ret |= BUTTON_BTNB_BIT;
     }
 
   return ret;
@@ -153,11 +141,11 @@ uint32_t board_buttons(void)
 #ifdef CONFIG_ARCH_IRQBUTTONS
 int board_button_irq(int id, xcpt_t irqhandler, FAR void *arg)
 {
-  int ret = -ENOSYS;
+//   int ret = -ENOSYS;
 
-#warning Missing Implementation!
-
-  return ret;
+// #warning Missing Implementation!
+  iinfo("board_button_irq\n");
+  return 1;
 }
 #endif
 

@@ -141,56 +141,56 @@ static inline void nrf51_gpio_mode(nrf51_pinset_t cfgset,
 
 int nrf51_gpio_config(nrf51_pinset_t cfgset)
 {
-  unsigned int port;
-  unsigned int pin;
+//   unsigned int port;
+//   unsigned int pin;
 
-  /* Verify that this hardware supports the select GPIO port */
+//   /* Verify that this hardware supports the select GPIO port */
 
-  port = (cfgset & GPIO_PORT_MASK) >> GPIO_PORT_SHIFT;
-  if (port < NRF51_GPIO_NPORTS)
-    {
-      /* Get the pin number and select the port configuration register for
-       * that pin.
-       */
+//   port = (cfgset & GPIO_PORT_MASK) >> GPIO_PORT_SHIFT;
+//   if (port < NRF51_GPIO_NPORTS)
+//     {
+//       /* Get the pin number and select the port configuration register for
+//        * that pin.
+//        */
 
-      pin = (cfgset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
+//       pin = (cfgset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
-      /* First, configure the port as a generic input so that we have a
-       * known starting point and consistent behavior during the re-
-       * configuration.
-       */
+//       /* First, configure the port as a generic input so that we have a
+//        * known starting point and consistent behavior during the re-
+//        * configuration.
+//        */
 
-      nrf51_gpio_input(port, pin);
+//       nrf51_gpio_input(port, pin);
 
-      /* Set the mode bits */
+//       /* Set the mode bits */
 
-      nrf51_gpio_mode(cfgset, port, pin);
+//       nrf51_gpio_mode(cfgset, port, pin);
 
-      /* Handle according to pin function */
+//       /* Handle according to pin function */
 
-      switch (cfgset & GPIO_FUNC_MASK)
-        {
-        case GPIO_INPUT:   /* GPIO input pin */
-          break;           /* Already configured */
+//       switch (cfgset & GPIO_FUNC_MASK)
+//         {
+//         case GPIO_INPUT:   /* GPIO input pin */
+//           break;           /* Already configured */
 
-#ifdef CONFIG_NRF51_GPIOIRQ
-        case GPIO_INTFE:   /* GPIO interrupt falling edge */
-        case GPIO_INTRE:   /* GPIO interrupt rising edge */
-        case GPIO_INTBOTH: /* GPIO interrupt both edges */
-        case GPIO_INTLOW:  /* GPIO interrupt low level */
-        case GPIO_INTHIGH: /* GPIO interrupt high level */
-          nrf51_gpio_interrupt(cfgset);
-          break;
-#endif
+// #ifdef CONFIG_NRF51_GPIOIRQ
+//         case GPIO_INTFE:   /* GPIO interrupt falling edge */
+//         case GPIO_INTRE:   /* GPIO interrupt rising edge */
+//         case GPIO_INTBOTH: /* GPIO interrupt both edges */
+//         case GPIO_INTLOW:  /* GPIO interrupt low level */
+//         case GPIO_INTHIGH: /* GPIO interrupt high level */
+//           nrf51_gpio_interrupt(cfgset);
+//           break;
+// #endif
 
-        case GPIO_OUTPUT:  /* GPIO outpout pin */
-          nrf51_gpio_output(cfgset, port, pin);
-          break;
+//         case GPIO_OUTPUT:  /* GPIO outpout pin */
+//           nrf51_gpio_output(cfgset, port, pin);
+//           break;
 
-        default:
-          return -EINVAL;
-        }
-    }
+//         default:
+//           return -EINVAL;
+//         }
+//     }
 
   return OK;
 }
@@ -234,4 +234,18 @@ bool nrf51_gpio_read(nrf51_pinset_t pinset)
   regval = getreg32(NRF51_GPIO0_IN);
 
   return (regval >> pin) & 1UL;
+}
+
+static int nrf51_gpio_interrupt(int irq, FAR void *context, FAR void *arg)
+{
+
+  return 0;
+}
+
+void nrf51_gpio_irqinitialize(void)
+{
+  
+  (void)irq_attach(NRF51_IRQ_GPIOTE, nrf51_gpio_interrupt, NULL);
+  up_enable_irq(NRF51_IRQ_GPIOTE);
+  return;
 }

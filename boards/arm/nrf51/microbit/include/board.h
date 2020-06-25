@@ -101,17 +101,13 @@
 
 /* Board supports four buttons. */
 
-#define BUTTON_BTN1       0
-#define BUTTON_BTN2       1
-#define BUTTON_BTN3       2
-#define BUTTON_BTN4       3
+#define BUTTON_BTNA       0
+#define BUTTON_BTNB       1
 
-#define NUM_BUTTONS       4
+#define NUM_BUTTONS       2
 
-#define BUTTON_BTN1_BIT  (1 << BUTTON_BTN1)
-#define BUTTON_BTN2_BIT  (1 << BUTTON_BTN2)
-#define BUTTON_BTN3_BIT  (1 << BUTTON_BTN3)
-#define BUTTON_BTN4_BIT  (1 << BUTTON_BTN4)
+#define BUTTON_BTNA_BIT  (1 << BUTTON_BTNA)
+#define BUTTON_BTNB_BIT  (1 << BUTTON_BTNB)
 
 /* UART Pins ****************************************************************/
 

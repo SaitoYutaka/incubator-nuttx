@@ -41,6 +41,7 @@
 
 #include <sys/types.h>
 #include <syslog.h>
+#include <nuttx/input/buttons.h>
 
 #ifdef CONFIG_NRF51_WDT
 #  include "nrf51_wdt.h"
@@ -89,6 +90,16 @@ int nrf51_bringup(void)
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: userled_lower_initialize() failed: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_BUTTONS
+  /* Register the BUTTON driver */
+
+  ret = btn_lower_initialize("/dev/buttons");
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: btn_lower_initialize() failed: %d\n", ret);
     }
 #endif
 

@@ -608,6 +608,8 @@ config ARCH_BOARD_MIRTOO
 config ARCH_BOARD_MICROBIT
 	bool "BBC micro:bit"
 	depends on ARCH_CHIP_NRF51
+	select ARCH_HAVE_BUTTONS
+	select ARCH_HAVE_IRQBUTTONS
 	# depends on ARCH_CHIP_PIC32MX250F128D
 	# select ARCH_HAVE_LEDS
 	---help---
