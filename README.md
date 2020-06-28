@@ -2,6 +2,14 @@
 
 This file will show that how to build nuttx for micro:bit.
 
+## Debut on micro:bit
+
+1.  Run pyocd
+```
+$ sudo pyocd gdbserver -t nrf51
+```
+2. Run Debug on VSCode 
+
 ## build and run qemu
 
 ```
@@ -100,6 +108,7 @@ in progress.
 
 ```
 $ git diff 66401c8960c5211ded41ae4f60bfb1746a84bd50 --name-only
+.vscode/launch.json
 README.md
 arch/arm/Kconfig
 arch/arm/include/nrf51/chip.h
@@ -130,6 +139,7 @@ arch/arm/src/nrf51/nrf51_lowputc.c
 arch/arm/src/nrf51/nrf51_lowputc.h
 arch/arm/src/nrf51/nrf51_nvmc.c
 arch/arm/src/nrf51/nrf51_nvmc.h
+arch/arm/src/nrf51/nrf51_rtc.h
 arch/arm/src/nrf51/nrf51_serial.c
 arch/arm/src/nrf51/nrf51_serial.h
 arch/arm/src/nrf51/nrf51_start.c
