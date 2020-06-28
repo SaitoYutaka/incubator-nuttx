@@ -141,37 +141,39 @@ static inline void nrf51_gpio_mode(nrf51_pinset_t cfgset,
 
 int nrf51_gpio_config(nrf51_pinset_t cfgset)
 {
-//   unsigned int port;
-//   unsigned int pin;
+  unsigned int port;
+  unsigned int pin;
 
-//   /* Verify that this hardware supports the select GPIO port */
+  /* Verify that this hardware supports the select GPIO port */
 
-//   port = (cfgset & GPIO_PORT_MASK) >> GPIO_PORT_SHIFT;
-//   if (port < NRF51_GPIO_NPORTS)
-//     {
-//       /* Get the pin number and select the port configuration register for
-//        * that pin.
-//        */
+  port = (cfgset & GPIO_PORT_MASK) >> GPIO_PORT_SHIFT;
+  // gpioinfo("port %d\n", port);
+  if (port < NRF51_GPIO_NPORTS)
+    {
+      /* Get the pin number and select the port configuration register for
+       * that pin.
+       */
 
-//       pin = (cfgset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
+      pin = (cfgset & GPIO_PIN_MASK) >> GPIO_PIN_SHIFT;
 
-//       /* First, configure the port as a generic input so that we have a
-//        * known starting point and consistent behavior during the re-
-//        * configuration.
-//        */
+      /* First, configure the port as a generic input so that we have a
+       * known starting point and consistent behavior during the re-
+       * configuration.
+       */
 
-//       nrf51_gpio_input(port, pin);
+      nrf51_gpio_input(port, pin);
 
-//       /* Set the mode bits */
+      /* Set the mode bits */
 
-//       nrf51_gpio_mode(cfgset, port, pin);
+      nrf51_gpio_mode(cfgset, port, pin);
 
-//       /* Handle according to pin function */
+      /* Handle according to pin function */
 
-//       switch (cfgset & GPIO_FUNC_MASK)
-//         {
-//         case GPIO_INPUT:   /* GPIO input pin */
-//           break;           /* Already configured */
+      switch (cfgset & GPIO_FUNC_MASK)
+        {
+        case GPIO_INPUT:   /* GPIO input pin */
+          // gpioinfo("GPIO_INPUT\n");
+          break;           /* Already configured */
 
 // #ifdef CONFIG_NRF51_GPIOIRQ
 //         case GPIO_INTFE:   /* GPIO interrupt falling edge */
@@ -183,14 +185,14 @@ int nrf51_gpio_config(nrf51_pinset_t cfgset)
 //           break;
 // #endif
 
-//         case GPIO_OUTPUT:  /* GPIO outpout pin */
-//           nrf51_gpio_output(cfgset, port, pin);
-//           break;
+        case GPIO_OUTPUT:  /* GPIO outpout pin */
+          nrf51_gpio_output(cfgset, port, pin);
+          break;
 
-//         default:
-//           return -EINVAL;
-//         }
-//     }
+        default:
+          return -EINVAL;
+        }
+    }
 
   return OK;
 }
@@ -238,14 +240,45 @@ bool nrf51_gpio_read(nrf51_pinset_t pinset)
 
 static int nrf51_gpio_interrupt(int irq, FAR void *context, FAR void *arg)
 {
+  gpioinfo("NRF51_GPIO0_IN %x NRF51_GPIOTE_CONFIG0 %x\n",getreg32(NRF51_GPIO0_IN), getreg32(NRF51_GPIOTE_CONFIG0));
+  if(getreg32(NRF51_GPIOTE_IN0)){
 
+    if((getreg32(NRF51_GPIO0_IN) & 0x20000) == 0) {
+
+    } else {
+
+    }
+    putreg32(0, NRF51_GPIOTE_IN0);
+    putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTENCLR);
+    putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(17)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG0);
+    // putreg32((getreg32(NRF51_GPIO0_OUTSET) | 0x20000), NRF51_GPIO0_OUTSET);
+
+    putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTEN);
+    putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTENSET);
+    putreg32(1, NRF51_GPIOTE_IN0);
+  }
   return 0;
 }
 
 void nrf51_gpio_irqinitialize(void)
 {
-  
+  gpioinfo("nrf51_gpio_irqinitialize\n");
+
+  putreg32(NRF51_GPIOTE_TASKS_ALL, NRF51_GPIOTE_INTENCLR);
+
+  putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(17)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG0);
+
+  putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTEN);
+  putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTENSET);
+
+  putreg32(1, NRF51_GPIOTE_IN0);
   (void)irq_attach(NRF51_IRQ_GPIOTE, nrf51_gpio_interrupt, NULL);
   up_enable_irq(NRF51_IRQ_GPIOTE);
+
+  // gpioinfo("NRF51_GPIOTE_INTENCLR addr %x val %x\n",NRF51_GPIOTE_INTENCLR, getreg32(NRF51_GPIOTE_INTENCLR));
+  // gpioinfo("NRF51_GPIOTE_CONFIG0 addr %x val %x\n",NRF51_GPIOTE_CONFIG0, getreg32(NRF51_GPIOTE_CONFIG0));
+  // gpioinfo("NRF51_GPIOTE_INTEN addr %x val %x\n",NRF51_GPIOTE_INTEN, getreg32(NRF51_GPIOTE_INTEN));
+  // gpioinfo("NRF51_GPIOTE_INTENSET addr %x val %x\n",getreg32(NRF51_GPIOTE_INTENSET));
+  // gpioinfo("NRF51_GPIOTE_IN0 addr %x val %x\n",getreg32(NRF51_GPIOTE_IN0));
   return;
 }

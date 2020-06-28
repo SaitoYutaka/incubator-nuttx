@@ -1,0 +1,41 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) 起動",
+            "type": "cppdbg",
+            "request": "launch",
+            // "request": "attach",
+            "program": "${workspaceFolder}/nuttx",
+            // "miDebuggerServerAddress": "127.0.0.1:1234",
+            // "miDebuggerServerAddress": "127.0.0.1:3333",
+            "miDebuggerPath": "arm-none-eabi-gdb",
+            "miDebuggerArgs": "${workspaceFolder}/nuttx -ex 'target remote :3333' -ex 'monitor halt' -ex 'monitor reset' -ex load",
+            // "debugServerPath": "pyocd",
+            // "debugServerArgs": " gdbserver -t nrf51",
+
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+
+            "MIMode": "gdb",
+
+            "internalConsoleOptions":"openOnSessionStart",
+            "setupCommands": [
+                {
+                    "description": "gdb の再フォーマットを有効にする",
+                    "text": "-enable-pretty-printing",
+                    // "text": "-interpreter-exec console \"monitor reset\"",
+                    "ignoreFailures": true,
+                    // "text": "-interpreter-exec console \"monitor reset\"", "ignoreFailures": false,
+                    // "text": "-interpreter-exec console \"monitor halt\"", "ignoreFailures": false,
+                }
+            ]
+        }
+    ]
+}
