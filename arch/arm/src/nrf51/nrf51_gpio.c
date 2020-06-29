@@ -45,6 +45,7 @@
 #include <errno.h>
 #include <debug.h>
 
+#include <nuttx/arch.h>
 #include <arch/irq.h>
 
 #include "up_arch.h"
@@ -240,22 +241,17 @@ bool nrf51_gpio_read(nrf51_pinset_t pinset)
 
 static int nrf51_gpio_interrupt(int irq, FAR void *context, FAR void *arg)
 {
-  gpioinfo("NRF51_GPIO0_IN %x NRF51_GPIOTE_CONFIG0 %x\n",getreg32(NRF51_GPIO0_IN), getreg32(NRF51_GPIOTE_CONFIG0));
+  
   if(getreg32(NRF51_GPIOTE_IN0)){
-
-    if((getreg32(NRF51_GPIO0_IN) & 0x20000) == 0) {
-
-    } else {
-
-    }
+    gpioinfo("NGPIO_BUTTONA\n");
     putreg32(0, NRF51_GPIOTE_IN0);
-    putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTENCLR);
-    putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(17)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG0);
-    // putreg32((getreg32(NRF51_GPIO0_OUTSET) | 0x20000), NRF51_GPIO0_OUTSET);
-
-    putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTEN);
-    putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTENSET);
     putreg32(1, NRF51_GPIOTE_IN0);
+  }
+
+  if(getreg32(NRF51_GPIOTE_IN1)){
+    gpioinfo("NGPIO_BUTTONB\n");
+    putreg32(0, NRF51_GPIOTE_IN1);
+    putreg32(1, NRF51_GPIOTE_IN1);
   }
   return 0;
 }
@@ -267,11 +263,13 @@ void nrf51_gpio_irqinitialize(void)
   putreg32(NRF51_GPIOTE_TASKS_ALL, NRF51_GPIOTE_INTENCLR);
 
   putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(17)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG0);
+  putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(26)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG1);
 
-  putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTEN);
-  putreg32(NRF51_GPIOTE_TASKS_IN0, NRF51_GPIOTE_INTENSET);
+  putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTEN);
+  putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTENSET);
 
   putreg32(1, NRF51_GPIOTE_IN0);
+  putreg32(1, NRF51_GPIOTE_IN1);
   (void)irq_attach(NRF51_IRQ_GPIOTE, nrf51_gpio_interrupt, NULL);
   up_enable_irq(NRF51_IRQ_GPIOTE);
 
