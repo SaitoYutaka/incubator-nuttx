@@ -104,6 +104,13 @@ in progress.
 #### What are the differences between Cortex-M0 and Cortex-M0+?
  * https://community.cypress.com/docs/DOC-10652
 
+#### LEDS
+
+ * https://github.com/bbcmicrobit/hardware
+ * file:///C:/Users/saitoyutaka/Downloads/MicrobitArduino.pdf
+
+![microbit_led](microbit_led.png)
+
 ## Files
 
 ```
