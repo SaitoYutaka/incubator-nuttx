@@ -107,7 +107,7 @@ in progress.
 #### LEDS
 
  * https://github.com/bbcmicrobit/hardware
- * file:///C:/Users/saitoyutaka/Downloads/MicrobitArduino.pdf
+ * http://www.didel.com/MicrobitArduino.pdf
 
 ![microbit_led](microbit_led.png)
 
