@@ -77,18 +77,18 @@
 
 static const uint32_t g_ledcfg[BOARD_NLEDS] =
 {
-#if 0 < BOARD_NLEDS
-  GPIO_LED1,
-#endif
-#if 1 < BOARD_NLEDS
-  GPIO_LED2,
-#endif
-#if 2 < BOARD_NLEDS
-  GPIO_LED3,
-#endif
-#if 3 < BOARD_NLEDS
-  GPIO_LED4,
-#endif
+  GPIO_LED_ROW3,
+  GPIO_LED_ROW2,
+  GPIO_LED_ROW1,
+  GPIO_LED_COL9,
+  GPIO_LED_COL8,
+  GPIO_LED_COL7,
+  GPIO_LED_COL6,
+  GPIO_LED_COL5,
+  GPIO_LED_COL4,
+  GPIO_LED_COL3,
+  GPIO_LED_COL2,
+  GPIO_LED_COL1,
 };
 
 /****************************************************************************

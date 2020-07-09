@@ -29,28 +29,105 @@ config NRF51_GENERIC_LED_ACTIVELOW
 	---help---
 		Board LEDs are 'active low'
 
-config NRF51_GENERIC_LED1_PIN
-	int "Pin select for LED 1"
-	default 17
-	---help---
-		Pin select for LED 1
+# config NRF51_GENERIC_LED1_PIN
+# 	int "Pin select for LED 1"
+# 	default 17
+# 	---help---
+# 		Pin select for LED 1
+# 
+# config NRF51_GENERIC_LED2_PIN
+# 	int "Pin select for LED 2"
+# 	default 18
+# 	---help---
+# 		Pin select for LED 2
+# 
+# config NRF51_GENERIC_LED3_PIN
+# 	int "Pin select for LED 3"
+# 	default 19
+# 	---help---
+# 		Pin select for LED 3
+# 
+# config NRF51_GENERIC_LED4_PIN
+# 	int "Pin select for LED 4"
+# 	default 20
+# 	---help---
+# 		Pin select for LED 4
 
-config NRF51_GENERIC_LED2_PIN
-	int "Pin select for LED 2"
-	default 18
-	---help---
-		Pin select for LED 2
-
-config NRF51_GENERIC_LED3_PIN
-	int "Pin select for LED 3"
-	default 19
-	---help---
-		Pin select for LED 3
-
-config NRF51_GENERIC_LED4_PIN
+config NRF51_GENERIC_LED_ROW3_PIN
 	int "Pin select for LED 4"
-	default 20
+	default 15
 	---help---
 		Pin select for LED 4
 
+config NRF51_GENERIC_LED_ROW2_PIN
+	int "Pin select for LED 4"
+	default 14
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_ROW1_PIN
+	int "Pin select for LED 4"
+	default 13
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL9_PIN
+	int "Pin select for LED 4"
+	default 12
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL8_PIN
+	int "Pin select for LED 4"
+	default 11
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL7_PIN
+	int "Pin select for LED 4"
+	default 10
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL6_PIN
+	int "Pin select for LED 4"
+	default 9
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL5_PIN
+	int "Pin select for LED 4"
+	default 8
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL4_PIN
+	int "Pin select for LED 4"
+	default 7
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL3_PIN
+	int "Pin select for LED 4"
+	default 6
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL2_PIN
+	int "Pin select for LED 4"
+	default 5
+	---help---
+		Pin select for LED 4
+
+config NRF51_GENERIC_LED_COL1_PIN
+	int "Pin select for LED 4"
+	default 4
+	---help---
+		Pin select for LED 4
+
+config EXAMPLES_MICROBIT_LEDS_DEVPATH
+	string
+	default "/dev/userleds"
+	---help---
+		Pin select for LED 4
 endif
