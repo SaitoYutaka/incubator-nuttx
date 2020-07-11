@@ -1,6 +1,25 @@
 # NuttX for micro:bit
 
-This file will show that how to build nuttx for micro:bit.
+## Satus
+
+in progress.
+
+## build
+
+1. make
+```
+$ git clone https://github.com/SaitoYutaka/incubator-nuttx.git nuttx
+$ git clone https://github.com/SaitoYutaka/incubator-nuttx-apps.git apps
+$ cd nuttx
+$ ./tools/configure.sh microbit:nsh
+$ make
+```
+2. Copy
+Copy nuttx.hex to micro:bit
+
+3. type "microbitleds" on nsh
+
+[![](https://img.youtube.com/vi/EDUbe8Czo7s/0.jpg)](https://www.youtube.com/watch?v=EDUbe8Czo7s)
 
 ## Debut on micro:bit
 
@@ -81,10 +100,6 @@ https://www.qemu.org/2019/05/22/microbit/
 ## Why
 
 Just my study.
-
-## Satus
-
-in progress.
 
 ## Memo
 ### About micro:bit
