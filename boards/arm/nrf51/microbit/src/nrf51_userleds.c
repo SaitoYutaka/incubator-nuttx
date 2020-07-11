@@ -77,6 +77,7 @@
 #define LED_OFF 0
 #endif
 
+// See https://github.com/SaitoYutaka/microbit_image_generator
 static const uint32_t ascii_table[] = 
 {
     0b0000000000000000000000000, // NOT YET
@@ -366,7 +367,6 @@ static const uint32_t g_ledcfg[BOARD_NLEDS] =
   GPIO_LED_COL1,
 };
 
-static uint8_t microbit_led = 0;
 /****************************************************************************
  * Private Functions
  ****************************************************************************/
@@ -386,13 +386,9 @@ static uint8_t microbit_led = 0;
 #define ALL_COLS (COL9 | COL8 | COL7 | COL6 | COL5 | COL4 | COL3 | COL2 | COL1)
 #define ALL_ROWS (ROW3 | ROW2 | ROW1)
 
-int row = 0x0;
-int col = 0x0;
-
-int led_row1 = 0x0;
-int led_row2 = 0x0;
-int led_row3 = 0x0;
-
+uint32_t static led_row1 = 0x0;
+uint32_t static led_row2 = 0x0;
+uint32_t static led_row3 = 0x0;
 static void led_on(int led)
 {
 /*
@@ -402,130 +398,34 @@ static void led_on(int led)
         [R1/C8] [R1/C7] [R1/C6] [R1/C5] [R1/C4]
         [R3/C3] [R2/C7] [R3/C1] [R2/C6] [R3/C2]
 */
-  // int output = 0x0;
-  // int row = 0x0;
-  // int col = 0x0;
-  // modifyreg32(NRF51_GPIO0_DIRSET, 0, ALL_LEDS);
-  // putreg32(ALL_LEDS, NRF51_GPIO0_DIRSET);
-  // 118 fe31
-
-  // row = 0x0;
-  // col = 0x0;
-  // switch(sel){
-  //   case 1:
-  //     if(led & 0b1000000000000000000000000) { row |= ROW1; col |= COL1;} // [R1/C1]
-  //     if(led & 0b0010000000000000000000000) { row |= ROW1; col |= COL2;} // [R1/C2]
-  //     if(led & 0b0000100000000000000000000) { row |= ROW1; col |= COL3;} // [R1/C3]
-  //     if(led & 0b0000000000010000000000000) { row |= ROW1; col |= COL9;} // [R1/C9]
-  //     if(led & 0b0000000000000001000000000) { row |= ROW1; col |= COL8;} // [R1/C8]
-  //     if(led & 0b0000000000000000100000000) { row |= ROW1; col |= COL7;} // [R1/C7]
-  //     if(led & 0b0000000000000000010000000) { row |= ROW1; col |= COL6;} // [R1/C6]
-  //     if(led & 0b0000000000000000001000000) { row |= ROW1; col |= COL5;} // [R1/C5]
-  //     if(led & 0b0000000000000000000100000) { row |= ROW1; col |= COL4;} // [R1/C4]
-  //     break;
-  //   case 2:
-  //     if(led & 0b0100000000000000000000000) { row |= ROW2; col |= COL4;} // [R2/C4]
-  //     if(led & 0b0001000000000000000000000) { row |= ROW2; col |= COL5;} // [R2/C5]
-  //     if(led & 0b0000000000100000000000000) { row |= ROW2; col |= COL2;} // [R2/C2]
-  //     if(led & 0b0000000000001000000000000) { row |= ROW2; col |= COL3;} // [R2/C3]
-  //     if(led & 0b0000000000000010000000000) { row |= ROW2; col |= COL1;} // [R2/C1]
-  //     if(led & 0b0000000000000000000001000) { row |= ROW2; col |= COL7;} // [R2/C7]
-  //     if(led & 0b0000000000000000000000010) { row |= ROW2; col |= COL6;} // [R2/C6]
-  //     break;
-  //   case 3:
-  //     if(led & 0b0000010000000000000000000) { row |= ROW3; col |= COL4;} // [R3/C4]
-  //     if(led & 0b0000001000000000000000000) { row |= ROW3; col |= COL5;} // [R3/C5]
-  //     if(led & 0b0000000100000000000000000) { row |= ROW3; col |= COL6;} // [R3/C6]
-  //     if(led & 0b0000000010000000000000000) { row |= ROW3; col |= COL7;} // [R3/C7]
-  //     if(led & 0b0000000001000000000000000) { row |= ROW3; col |= COL8;} // [R3/C8]
-  //     if(led & 0b0000000000000100000000000) { row |= ROW3; col |= COL9;} // [R3/C9]
-  //     if(led & 0b0000000000000000000010000) { row |= ROW3; col |= COL3;} // [R3/C3]
-  //     if(led & 0b0000000000000000000000100) { row |= ROW3; col |= COL1;} // [R3/C1]
-  //     if(led & 0b0000000000000000000000001) { row |= ROW3; col |= COL2;} // [R3/C2]
-  //     break;
-  // }
-
-  if(led & 0b1000000000000000000000000) { row |= ROW1; led_row1 |= COL1;} // [R1/C1]
-  if(led & 0b0100000000000000000000000) { row |= ROW2; led_row2 |= COL4;} // [R2/C4]
-  if(led & 0b0010000000000000000000000) { row |= ROW1; led_row1 |= COL2;} // [R1/C2]
-  if(led & 0b0001000000000000000000000) { row |= ROW2; led_row2 |= COL5;} // [R2/C5]
-  if(led & 0b0000100000000000000000000) { row |= ROW1; led_row1 |= COL3;} // [R1/C3]
-
-  if(led & 0b0000010000000000000000000) { row |= ROW3; led_row3 |= COL4;} // [R3/C4]
-  if(led & 0b0000001000000000000000000) { row |= ROW3; led_row3 |= COL5;} // [R3/C5]
-  if(led & 0b0000000100000000000000000) { row |= ROW3; led_row3 |= COL6;} // [R3/C6]
-  if(led & 0b0000000010000000000000000) { row |= ROW3; led_row3 |= COL7;} // [R3/C7]
-  if(led & 0b0000000001000000000000000) { row |= ROW3; led_row3 |= COL8;} // [R3/C8]
-
-  if(led & 0b0000000000100000000000000) { row |= ROW2; led_row2 |= COL2;} // [R2/C2]
-  if(led & 0b0000000000010000000000000) { row |= ROW1; led_row1 |= COL9;} // [R1/C9]
-  if(led & 0b0000000000001000000000000) { row |= ROW2; led_row2 |= COL3;} // [R2/C3]
-  if(led & 0b0000000000000100000000000) { row |= ROW3; led_row3 |= COL9;} // [R3/C9]
-  if(led & 0b0000000000000010000000000) { row |= ROW2; led_row2 |= COL1;} // [R2/C1]
-
-  if(led & 0b0000000000000001000000000) { row |= ROW1; led_row1 |= COL8;} // [R1/C8]
-  if(led & 0b0000000000000000100000000) { row |= ROW1; led_row1 |= COL7;} // [R1/C7]
-  if(led & 0b0000000000000000010000000) { row |= ROW1; led_row1 |= COL6;} // [R1/C6]
-  if(led & 0b0000000000000000001000000) { row |= ROW1; led_row1 |= COL5;} // [R1/C5]
-  if(led & 0b0000000000000000000100000) { row |= ROW1; led_row1 |= COL4;} // [R1/C4]
-
-  if(led & 0b0000000000000000000010000) { row |= ROW3; led_row3 |= COL3;} // [R3/C3]
-  if(led & 0b0000000000000000000001000) { row |= ROW2; led_row2 |= COL7;} // [R2/C7]
-  if(led & 0b0000000000000000000000100) { row |= ROW3; led_row3 |= COL1;} // [R3/C1]
-  if(led & 0b0000000000000000000000010) { row |= ROW2; led_row2 |= COL6;} // [R2/C6]
-  if(led & 0b0000000000000000000000001) { row |= ROW3; led_row3 |= COL2;} // [R3/C2]
-
-///////
-  // if(led & 0x00000001) { row |= ROW1; col |= COL1;} // [R1/C1]
-  // if(led & 0x00000002) { row |= ROW2; col |= COL4;} // [R2/C4]
-  // if(led & 0x00000004) { row |= ROW1; col |= COL2;} // [R1/C2]
-  // if(led & 0x00000008) { row |= ROW2; col |= COL5;} // [R2/C5]
-  // if(led & 0x00000010) { row |= ROW1; col |= COL3;} // [R1/C3]
-
-  // if(led & 0x00000020) { row |= ROW3; col |= COL4;} // [R3/C4]
-  // if(led & 0x00000040) { row |= ROW3; col |= COL5;} // [R3/C5]
-  // if(led & 0x00000080) { row |= ROW3; col |= COL6;} // [R3/C6]
-  // if(led & 0x00000100) { row |= ROW3; col |= COL7;} // [R3/C7]
-  // if(led & 0x00000200) { row |= ROW3; col |= COL8;} // [R3/C8]
-
-  // if(led & 0x00000400) { row |= ROW2; col |= COL2;} // [R2/C2]
-  // if(led & 0x00000800) { row |= ROW1; col |= COL9;} // [R1/C9]
-  // if(led & 0x00001000) { row |= ROW2; col |= COL3;} // [R2/C3]
-  // if(led & 0x00002000) { row |= ROW3; col |= COL9;} // [R3/C9]
-  // if(led & 0x00004000) { row |= ROW2; col |= COL1;} // [R2/C1]
-
-  // if(led & 0x00008000) { row |= ROW1; col |= COL8;} // [R1/C8]
-  // if(led & 0x00010000) { row |= ROW1; col |= COL7;} // [R1/C7]
-  // if(led & 0x00020000) { row |= ROW1; col |= COL6;} // [R1/C6]
-  // if(led & 0x00040000) { row |= ROW1; col |= COL5;} // [R1/C5]
-  // if(led & 0x00080000) { row |= ROW1; col |= COL4;} // [R1/C4]
-
-  // if(led & 0x00100000) { row |= ROW3; col |= COL3;} // [R3/C3]
-  // if(led & 0x00200000) { row |= ROW2; col |= COL7;} // [R2/C7]
-  // if(led & 0x00400000) { row |= ROW3; col |= COL1;} // [R3/C1]
-  // if(led & 0x00800000) { row |= ROW2; col |= COL6;} // [R2/C6]
-  // if(led & 0x01000000) { row |= ROW3; col |= COL2;} // [R3/C2]
-
-  // ledinfo("row %x col %x\n", row, col);
-  // ledinfo("NRF51_GPIO0_DIRSET %x\n", getreg32(NRF51_GPIO0_DIRSET));
-  // ledinfo("NRF51_GPIO0_OUTCLR %x\n", getreg32(NRF51_GPIO0_OUTCLR));
-  // ledinfo("NRF51_GPIO0_OUTSET %x\n", getreg32(NRF51_GPIO0_OUTSET));
-
-  // modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
-  // modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
-  // modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, row | col);
-  // modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, col);
-  // modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, row); // ON
-
-  // putreg32(((getreg32(NRF51_GPIO0_DIRSET) & ~ALL_LEDS) | (row | col)), NRF51_GPIO0_DIRSET);
-  // putreg32(((getreg32(NRF51_GPIO0_OUTCLR) & ~ALL_LEDS) | col), NRF51_GPIO0_OUTCLR);
-  // putreg32(((getreg32(NRF51_GPIO0_OUTSET) & ~ALL_LEDS) | row), NRF51_GPIO0_OUTSET);
-  // putreg32(row | col, NRF51_GPIO0_DIRSET);
-  // putreg32(col, NRF51_GPIO0_OUTCLR);
-  // putreg32(row, NRF51_GPIO0_OUTSET); // ON
-  // putreg32((1<<ROW1)|(1<<ROW2)|(1<<COL1)|(1<<COL4)|(1<<COL2)|(1<<COL5)|(1<<COL3), NRF51_GPIO0_DIRSET);
-  // putreg32((1<<COL1)|(1<<COL4)|(1<<COL2)|(1<<COL5)|(1<<COL3), NRF51_GPIO0_OUTCLR);
-  // putreg32((1<<ROW1)|(1<<ROW2), NRF51_GPIO0_OUTSET); // ON
+  led_row1 = 0x0;
+  led_row2 = 0x0;
+  led_row3 = 0x0;
+  if(led & 0b1000000000000000000000000) { led_row1 |= COL1;} // [R1/C1]
+  if(led & 0b0100000000000000000000000) { led_row2 |= COL4;} // [R2/C4]
+  if(led & 0b0010000000000000000000000) { led_row1 |= COL2;} // [R1/C2]
+  if(led & 0b0001000000000000000000000) { led_row2 |= COL5;} // [R2/C5]
+  if(led & 0b0000100000000000000000000) { led_row1 |= COL3;} // [R1/C3]
+  if(led & 0b0000010000000000000000000) { led_row3 |= COL4;} // [R3/C4]
+  if(led & 0b0000001000000000000000000) { led_row3 |= COL5;} // [R3/C5]
+  if(led & 0b0000000100000000000000000) { led_row3 |= COL6;} // [R3/C6]
+  if(led & 0b0000000010000000000000000) { led_row3 |= COL7;} // [R3/C7]
+  if(led & 0b0000000001000000000000000) { led_row3 |= COL8;} // [R3/C8]
+  if(led & 0b0000000000100000000000000) { led_row2 |= COL2;} // [R2/C2]
+  if(led & 0b0000000000010000000000000) { led_row1 |= COL9;} // [R1/C9]
+  if(led & 0b0000000000001000000000000) { led_row2 |= COL3;} // [R2/C3]
+  if(led & 0b0000000000000100000000000) { led_row3 |= COL9;} // [R3/C9]
+  if(led & 0b0000000000000010000000000) { led_row2 |= COL1;} // [R2/C1]
+  if(led & 0b0000000000000001000000000) { led_row1 |= COL8;} // [R1/C8]
+  if(led & 0b0000000000000000100000000) { led_row1 |= COL7;} // [R1/C7]
+  if(led & 0b0000000000000000010000000) { led_row1 |= COL6;} // [R1/C6]
+  if(led & 0b0000000000000000001000000) { led_row1 |= COL5;} // [R1/C5]
+  if(led & 0b0000000000000000000100000) { led_row1 |= COL4;} // [R1/C4]
+  if(led & 0b0000000000000000000010000) { led_row3 |= COL3;} // [R3/C3]
+  if(led & 0b0000000000000000000001000) { led_row2 |= COL7;} // [R2/C7]
+  if(led & 0b0000000000000000000000100) { led_row3 |= COL1;} // [R3/C1]
+  if(led & 0b0000000000000000000000010) { led_row2 |= COL6;} // [R2/C6]
+  if(led & 0b0000000000000000000000001) { led_row3 |= COL2;} // [R3/C2]
   return;
 }
 
@@ -596,101 +496,46 @@ static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
   if(getreg32(NRF51_RTC0_TICK)){
     putreg32(0x0, NRF51_RTC0_TICK);
     putreg32(NRF51_RTC0_BIT_TICK, NRF51_RTC0_EVTENCLR); // clear
-    // nxsched_process_timer();
     microbit_cnt++;
-    // if(microbit_cnt % 20 == 0){
-    if(1){
-      ledinfo("nrf51_microbitled\n");
-      microbit_cnt = 1;
-      led_on(ascii_table[65]);
 
+    microbit_cnt = 1;
+    // led_on(ascii_table['X']);
 
-      switch(microbit_switch){
-        case 0:
-          microbit_switch = 1;
-          // led_on(ascii_table[66], 1);
-          modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW1 | led_row1);
-          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row1);
-          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW1); // ON
-          break;
-        case 1:
-          microbit_switch = 2;
-          // led_on(ascii_table[66], 2);
-          modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW2 | led_row2);
-          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row2);
-          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW2); // ON
-          break;
-        case 2:
-          microbit_switch = 0;
-          // led_on(ascii_table[66], 3);
-          modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW3 | led_row3);
-          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row3);
-          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW3); // ON
-          break;
-        default:
-          break;
-      }
-
-      // switch(microbit_switch){
-      //   case 0:
-      //     microbit_switch = 1;
-      //     microbit_display(
-      //       1,0,1,0,1,
-      //       0,0,0,0,0,
-      //       0,1,0,0,0,
-      //       1,1,1,1,1,
-      //       0,0,0,0,0
-      //     );
-      //     break;
-      //   case 1:
-      //     microbit_switch = 2;
-      //     microbit_display(
-      //       0,0,0,0,0,
-      //       1,1,1,1,1,
-      //       0,0,0,1,0,
-      //       0,0,0,0,0,
-      //       1,0,1,0,1
-      //     );
-      //     break;
-      //   case 2:
-      //     microbit_switch = 0;
-      //     microbit_display(
-      //       0,1,0,1,0,
-      //       0,0,0,0,0,
-      //       1,0,1,0,1,
-      //       0,0,0,0,0,
-      //       0,1,0,1,0
-      //     );
-      //     break;
-      //   default:
-      //     break;
-      // }
+    switch(microbit_switch){
+      case 0:
+        microbit_switch = 1;
+        modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
+        modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
+        modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW1 | led_row1);
+        modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row1);
+        modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW1);
+        break;
+      case 1:
+        microbit_switch = 2;
+        modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
+        modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
+        modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW2 | led_row2);
+        modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row2);
+        modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW2);
+        break;
+      case 2:
+        microbit_switch = 0;
+        modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
+        modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
+        modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW3 | led_row3);
+        modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row3);
+        modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW3);
+        break;
+      default:
+        break;
     }
+
   }
   return 0;
 }
 
 void board_userled_initialize(void)
 {
-  // int i;
-
-  // /* Configure LED pin as a GPIO outputs */
-
-  // led_dumppins("board_userled_initialize() Entry)");
-
-  // /* Configure GPIO as an outputs */
-
-  // for (i = 0; i < BOARD_NLEDS; i++)
-  //   {
-  //     nrf51_gpio_config(g_ledcfg[i]);
-  //   }
-
   // led_dumppins("board_userled_initialize() Exit");
   (void)irq_attach(NRF51_IRQ_RTC0, (xcpt_t)nrf51_microbitled, NULL);
   up_enable_irq(NRF51_IRQ_RTC0);
@@ -723,17 +568,8 @@ void board_userled(int led, bool ledon)
 
 void board_userled_all(uint8_t ledset)
 {
-  // int i;
-
-  /* Configure LED1-8 GPIOs for output */
   ledinfo("ledset %x\n", ledset);
-  microbit_led = ledset;
-  // for (i = 0; i < BOARD_NLEDS; i++)
-  //   {
-  //     nrf51_gpio_write(g_ledcfg[i], (ledset & (1 << i)) ? LED_ON : LED_OFF);
-  //   }
-  // if(ledset == 0) return ;
-
+  led_on(ascii_table[ledset]);
 }
 
 #endif /* !CONFIG_ARCH_LEDS */
