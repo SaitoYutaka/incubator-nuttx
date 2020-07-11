@@ -388,7 +388,12 @@ static uint8_t microbit_led = 0;
 
 int row = 0x0;
 int col = 0x0;
-static void led_on(int led, int sel)
+
+int led_row1 = 0x0;
+int led_row2 = 0x0;
+int led_row3 = 0x0;
+
+static void led_on(int led)
 {
 /*
         [R1/C1] [R2/C4] [R1/C2] [R2/C5] [R1/C3]
@@ -404,71 +409,71 @@ static void led_on(int led, int sel)
   // putreg32(ALL_LEDS, NRF51_GPIO0_DIRSET);
   // 118 fe31
 
-  row = 0x0;
-  col = 0x0;
-  switch(sel){
-    case 1:
-      if(led & 0b1000000000000000000000000) { row |= ROW1; col |= COL1;} // [R1/C1]
-      if(led & 0b0010000000000000000000000) { row |= ROW1; col |= COL2;} // [R1/C2]
-      if(led & 0b0000100000000000000000000) { row |= ROW1; col |= COL3;} // [R1/C3]
-      if(led & 0b0000000000010000000000000) { row |= ROW1; col |= COL9;} // [R1/C9]
-      if(led & 0b0000000000000001000000000) { row |= ROW1; col |= COL8;} // [R1/C8]
-      if(led & 0b0000000000000000100000000) { row |= ROW1; col |= COL7;} // [R1/C7]
-      if(led & 0b0000000000000000010000000) { row |= ROW1; col |= COL6;} // [R1/C6]
-      if(led & 0b0000000000000000001000000) { row |= ROW1; col |= COL5;} // [R1/C5]
-      if(led & 0b0000000000000000000100000) { row |= ROW1; col |= COL4;} // [R1/C4]
-      break;
-    case 2:
-      if(led & 0b0100000000000000000000000) { row |= ROW2; col |= COL4;} // [R2/C4]
-      if(led & 0b0001000000000000000000000) { row |= ROW2; col |= COL5;} // [R2/C5]
-      if(led & 0b0000000000100000000000000) { row |= ROW2; col |= COL2;} // [R2/C2]
-      if(led & 0b0000000000001000000000000) { row |= ROW2; col |= COL3;} // [R2/C3]
-      if(led & 0b0000000000000010000000000) { row |= ROW2; col |= COL1;} // [R2/C1]
-      if(led & 0b0000000000000000000001000) { row |= ROW2; col |= COL7;} // [R2/C7]
-      if(led & 0b0000000000000000000000010) { row |= ROW2; col |= COL6;} // [R2/C6]
-      break;
-    case 3:
-      if(led & 0b0000010000000000000000000) { row |= ROW3; col |= COL4;} // [R3/C4]
-      if(led & 0b0000001000000000000000000) { row |= ROW3; col |= COL5;} // [R3/C5]
-      if(led & 0b0000000100000000000000000) { row |= ROW3; col |= COL6;} // [R3/C6]
-      if(led & 0b0000000010000000000000000) { row |= ROW3; col |= COL7;} // [R3/C7]
-      if(led & 0b0000000001000000000000000) { row |= ROW3; col |= COL8;} // [R3/C8]
-      if(led & 0b0000000000000100000000000) { row |= ROW3; col |= COL9;} // [R3/C9]
-      if(led & 0b0000000000000000000010000) { row |= ROW3; col |= COL3;} // [R3/C3]
-      if(led & 0b0000000000000000000000100) { row |= ROW3; col |= COL1;} // [R3/C1]
-      if(led & 0b0000000000000000000000001) { row |= ROW3; col |= COL2;} // [R3/C2]
-      break;
-  }
+  // row = 0x0;
+  // col = 0x0;
+  // switch(sel){
+  //   case 1:
+  //     if(led & 0b1000000000000000000000000) { row |= ROW1; col |= COL1;} // [R1/C1]
+  //     if(led & 0b0010000000000000000000000) { row |= ROW1; col |= COL2;} // [R1/C2]
+  //     if(led & 0b0000100000000000000000000) { row |= ROW1; col |= COL3;} // [R1/C3]
+  //     if(led & 0b0000000000010000000000000) { row |= ROW1; col |= COL9;} // [R1/C9]
+  //     if(led & 0b0000000000000001000000000) { row |= ROW1; col |= COL8;} // [R1/C8]
+  //     if(led & 0b0000000000000000100000000) { row |= ROW1; col |= COL7;} // [R1/C7]
+  //     if(led & 0b0000000000000000010000000) { row |= ROW1; col |= COL6;} // [R1/C6]
+  //     if(led & 0b0000000000000000001000000) { row |= ROW1; col |= COL5;} // [R1/C5]
+  //     if(led & 0b0000000000000000000100000) { row |= ROW1; col |= COL4;} // [R1/C4]
+  //     break;
+  //   case 2:
+  //     if(led & 0b0100000000000000000000000) { row |= ROW2; col |= COL4;} // [R2/C4]
+  //     if(led & 0b0001000000000000000000000) { row |= ROW2; col |= COL5;} // [R2/C5]
+  //     if(led & 0b0000000000100000000000000) { row |= ROW2; col |= COL2;} // [R2/C2]
+  //     if(led & 0b0000000000001000000000000) { row |= ROW2; col |= COL3;} // [R2/C3]
+  //     if(led & 0b0000000000000010000000000) { row |= ROW2; col |= COL1;} // [R2/C1]
+  //     if(led & 0b0000000000000000000001000) { row |= ROW2; col |= COL7;} // [R2/C7]
+  //     if(led & 0b0000000000000000000000010) { row |= ROW2; col |= COL6;} // [R2/C6]
+  //     break;
+  //   case 3:
+  //     if(led & 0b0000010000000000000000000) { row |= ROW3; col |= COL4;} // [R3/C4]
+  //     if(led & 0b0000001000000000000000000) { row |= ROW3; col |= COL5;} // [R3/C5]
+  //     if(led & 0b0000000100000000000000000) { row |= ROW3; col |= COL6;} // [R3/C6]
+  //     if(led & 0b0000000010000000000000000) { row |= ROW3; col |= COL7;} // [R3/C7]
+  //     if(led & 0b0000000001000000000000000) { row |= ROW3; col |= COL8;} // [R3/C8]
+  //     if(led & 0b0000000000000100000000000) { row |= ROW3; col |= COL9;} // [R3/C9]
+  //     if(led & 0b0000000000000000000010000) { row |= ROW3; col |= COL3;} // [R3/C3]
+  //     if(led & 0b0000000000000000000000100) { row |= ROW3; col |= COL1;} // [R3/C1]
+  //     if(led & 0b0000000000000000000000001) { row |= ROW3; col |= COL2;} // [R3/C2]
+  //     break;
+  // }
 
-  // if(led & 0b1000000000000000000000000) { row |= ROW1; col |= COL1;} // [R1/C1]
-  // if(led & 0b0100000000000000000000000) { row |= ROW2; col |= COL4;} // [R2/C4]
-  // if(led & 0b0010000000000000000000000) { row |= ROW1; col |= COL2;} // [R1/C2]
-  // if(led & 0b0001000000000000000000000) { row |= ROW2; col |= COL5;} // [R2/C5]
-  // if(led & 0b0000100000000000000000000) { row |= ROW1; col |= COL3;} // [R1/C3]
+  if(led & 0b1000000000000000000000000) { row |= ROW1; led_row1 |= COL1;} // [R1/C1]
+  if(led & 0b0100000000000000000000000) { row |= ROW2; led_row2 |= COL4;} // [R2/C4]
+  if(led & 0b0010000000000000000000000) { row |= ROW1; led_row1 |= COL2;} // [R1/C2]
+  if(led & 0b0001000000000000000000000) { row |= ROW2; led_row2 |= COL5;} // [R2/C5]
+  if(led & 0b0000100000000000000000000) { row |= ROW1; led_row1 |= COL3;} // [R1/C3]
 
-  // if(led & 0b0000010000000000000000000) { row |= ROW3; col |= COL4;} // [R3/C4]
-  // if(led & 0b0000001000000000000000000) { row |= ROW3; col |= COL5;} // [R3/C5]
-  // if(led & 0b0000000100000000000000000) { row |= ROW3; col |= COL6;} // [R3/C6]
-  // if(led & 0b0000000010000000000000000) { row |= ROW3; col |= COL7;} // [R3/C7]
-  // if(led & 0b0000000001000000000000000) { row |= ROW3; col |= COL8;} // [R3/C8]
+  if(led & 0b0000010000000000000000000) { row |= ROW3; led_row3 |= COL4;} // [R3/C4]
+  if(led & 0b0000001000000000000000000) { row |= ROW3; led_row3 |= COL5;} // [R3/C5]
+  if(led & 0b0000000100000000000000000) { row |= ROW3; led_row3 |= COL6;} // [R3/C6]
+  if(led & 0b0000000010000000000000000) { row |= ROW3; led_row3 |= COL7;} // [R3/C7]
+  if(led & 0b0000000001000000000000000) { row |= ROW3; led_row3 |= COL8;} // [R3/C8]
 
-  // if(led & 0b0000000000100000000000000) { row |= ROW2; col |= COL2;} // [R2/C2]
-  // if(led & 0b0000000000010000000000000) { row |= ROW1; col |= COL9;} // [R1/C9]
-  // if(led & 0b0000000000001000000000000) { row |= ROW2; col |= COL3;} // [R2/C3]
-  // if(led & 0b0000000000000100000000000) { row |= ROW3; col |= COL9;} // [R3/C9]
-  // if(led & 0b0000000000000010000000000) { row |= ROW2; col |= COL1;} // [R2/C1]
+  if(led & 0b0000000000100000000000000) { row |= ROW2; led_row2 |= COL2;} // [R2/C2]
+  if(led & 0b0000000000010000000000000) { row |= ROW1; led_row1 |= COL9;} // [R1/C9]
+  if(led & 0b0000000000001000000000000) { row |= ROW2; led_row2 |= COL3;} // [R2/C3]
+  if(led & 0b0000000000000100000000000) { row |= ROW3; led_row3 |= COL9;} // [R3/C9]
+  if(led & 0b0000000000000010000000000) { row |= ROW2; led_row2 |= COL1;} // [R2/C1]
 
-  // if(led & 0b0000000000000001000000000) { row |= ROW1; col |= COL8;} // [R1/C8]
-  // if(led & 0b0000000000000000100000000) { row |= ROW1; col |= COL7;} // [R1/C7]
-  // if(led & 0b0000000000000000010000000) { row |= ROW1; col |= COL6;} // [R1/C6]
-  // if(led & 0b0000000000000000001000000) { row |= ROW1; col |= COL5;} // [R1/C5]
-  // if(led & 0b0000000000000000000100000) { row |= ROW1; col |= COL4;} // [R1/C4]
+  if(led & 0b0000000000000001000000000) { row |= ROW1; led_row1 |= COL8;} // [R1/C8]
+  if(led & 0b0000000000000000100000000) { row |= ROW1; led_row1 |= COL7;} // [R1/C7]
+  if(led & 0b0000000000000000010000000) { row |= ROW1; led_row1 |= COL6;} // [R1/C6]
+  if(led & 0b0000000000000000001000000) { row |= ROW1; led_row1 |= COL5;} // [R1/C5]
+  if(led & 0b0000000000000000000100000) { row |= ROW1; led_row1 |= COL4;} // [R1/C4]
 
-  // if(led & 0b0000000000000000000010000) { row |= ROW3; col |= COL3;} // [R3/C3]
-  // if(led & 0b0000000000000000000001000) { row |= ROW2; col |= COL7;} // [R2/C7]
-  // if(led & 0b0000000000000000000000100) { row |= ROW3; col |= COL1;} // [R3/C1]
-  // if(led & 0b0000000000000000000000010) { row |= ROW2; col |= COL6;} // [R2/C6]
-  // if(led & 0b0000000000000000000000001) { row |= ROW3; col |= COL2;} // [R3/C2]
+  if(led & 0b0000000000000000000010000) { row |= ROW3; led_row3 |= COL3;} // [R3/C3]
+  if(led & 0b0000000000000000000001000) { row |= ROW2; led_row2 |= COL7;} // [R2/C7]
+  if(led & 0b0000000000000000000000100) { row |= ROW3; led_row3 |= COL1;} // [R3/C1]
+  if(led & 0b0000000000000000000000010) { row |= ROW2; led_row2 |= COL6;} // [R2/C6]
+  if(led & 0b0000000000000000000000001) { row |= ROW3; led_row3 |= COL2;} // [R3/C2]
 
 ///////
   // if(led & 0x00000001) { row |= ROW1; col |= COL1;} // [R1/C1]
@@ -597,36 +602,36 @@ static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
     if(1){
       ledinfo("nrf51_microbitled\n");
       microbit_cnt = 1;
-      // led_on(ascii_table[66]);
+      led_on(ascii_table[65]);
 
 
       switch(microbit_switch){
         case 0:
           microbit_switch = 1;
-          led_on(ascii_table[66], 1);
+          // led_on(ascii_table[66], 1);
           modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
           modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, row | col);
-          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, col);
-          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, row); // ON
+          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW1 | led_row1);
+          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row1);
+          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW1); // ON
           break;
         case 1:
           microbit_switch = 2;
-          led_on(ascii_table[66], 2);
+          // led_on(ascii_table[66], 2);
           modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
           modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, row | col);
-          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, col);
-          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, row); // ON
+          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW2 | led_row2);
+          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row2);
+          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW2); // ON
           break;
         case 2:
           microbit_switch = 0;
-          led_on(ascii_table[66], 3);
+          // led_on(ascii_table[66], 3);
           modifyreg32(NRF51_GPIO0_DIRCLR, 0, ALL_LEDS);
           modifyreg32(NRF51_GPIO0_OUTCLR, 0, ALL_LEDS);
-          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, row | col);
-          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, col);
-          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, row); // ON
+          modifyreg32(NRF51_GPIO0_DIRSET, ALL_LEDS, ROW3 | led_row3);
+          modifyreg32(NRF51_GPIO0_OUTCLR, ALL_COLS, led_row3);
+          modifyreg32(NRF51_GPIO0_OUTSET, ALL_ROWS, ROW3); // ON
           break;
         default:
           break;
