@@ -533,6 +533,7 @@ static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
     putreg32(NRF51_RTC0_BIT_TICK, NRF51_RTC0_EVTENCLR); // clear
     microbit_cnt++;
 
+#if 0
     make_animation(ascii_table['A']);
 
     if((microbit_cnt % 0x111) == 0){
@@ -541,7 +542,7 @@ static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
         microbit_index = 0;
       }
     }
-
+#endif
     switch(microbit_switch){
       case 0:
         microbit_switch = 1;

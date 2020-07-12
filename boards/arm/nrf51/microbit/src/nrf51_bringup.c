@@ -47,8 +47,8 @@
 #  include "nrf51_wdt.h"
 #endif
 
-#ifdef CONFIG_USERLED
-#  include <nuttx/leds/userled.h>
+#ifdef CONFIG_MICROBIT_LED
+#  include <nuttx/leds/microbit_led.h>
 #endif
 
 /****************************************************************************
@@ -83,7 +83,7 @@ int nrf51_bringup(void)
     }
 #endif
 
-#ifdef CONFIG_USERLED
+#ifdef CONFIG_MICROBIT_LED
   /* Register the LED driver */
 
   ret = userled_lower_initialize(CONFIG_EXAMPLES_MICROBIT_LEDS_DEVPATH);

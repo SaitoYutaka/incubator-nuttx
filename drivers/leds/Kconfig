@@ -96,4 +96,10 @@ config NCP5623C
 		Enable support for the onsemi NCP5623C LED driver which can be
 		utilized to drive up to 3 LED's.
 
+config MICROBIT_LED
+	bool "microbit LED Driver"
+	default n
+	---help---
+		Enable microbit LED
+
 endmenu # LED Support

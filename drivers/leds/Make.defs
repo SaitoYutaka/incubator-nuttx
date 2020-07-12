@@ -79,6 +79,15 @@ ifeq ($(CONFIG_NCP5623C),y)
   LEDVPATH = :leds
 endif
 
+ifeq ($(CONFIG_MICROBIT_LED),y)
+  CSRCS += microbit.c
+ifeq ($(CONFIG_USERLED_LOWER),y)
+  CSRCS += userled_lower.c
+endif
+  LEDDEPATH = --dep-path leds
+  LEDVPATH = :leds
+endif
+
 # Include LED build support (if any LED drivers were selected)
 
 DEPPATH += $(LEDDEPATH)
