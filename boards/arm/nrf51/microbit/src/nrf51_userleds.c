@@ -389,6 +389,40 @@ static const uint32_t g_ledcfg[BOARD_NLEDS] =
 uint32_t static led_row1 = 0x0;
 uint32_t static led_row2 = 0x0;
 uint32_t static led_row3 = 0x0;
+
+uint32_t static scroll[10];
+
+static void make_animation(int led){
+
+/*   0b0110010010111101001010010 // A
+       |    |    |    |    |          
+     0b1000010000100001000010000  // 1
+
+01100 0  - 4
+10010 5  - 9
+11110 10 - 14
+10010 15 - 19
+10010 20 - 24  // A
+
+
+*/
+
+  // 0
+  scroll[0] = 0;
+  scroll[1] = ((led & 0b1000010000100001000010000) >> 4);
+  scroll[2] = ((led & 0b1100011000110001100011000) >> 3);
+  scroll[3] = ((led & 0b1110011100111001110011100) >> 2);
+  scroll[4] = ((led & 0b1111011110111101111011110) >> 1);
+  scroll[5] = led; // ((led & 0b1111111111111111111111111) >> 0);
+  scroll[6] = ((led & 0b0111101111011110111101111) << 1);
+  scroll[7] = ((led & 0b0011100111001110011100111) << 2);
+  scroll[8] = ((led & 0b0001100011000110001100011) << 3);
+  scroll[9] = ((led & 0b0000100001000010000100001) << 4);
+
+  return;
+}
+
+
 static void led_on(int led)
 {
 /*
@@ -489,8 +523,9 @@ static void led_dumppins(FAR const char *msg)
 /****************************************************************************
  * Name: board_userled_initialize
  ****************************************************************************/
-static uint8_t microbit_cnt = 1;
+static uint32_t microbit_cnt = 0;
 static uint8_t microbit_switch = 0;
+static uint8_t microbit_index = 0;
 static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
 {
   if(getreg32(NRF51_RTC0_TICK)){
@@ -498,8 +533,14 @@ static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
     putreg32(NRF51_RTC0_BIT_TICK, NRF51_RTC0_EVTENCLR); // clear
     microbit_cnt++;
 
-    microbit_cnt = 1;
-    // led_on(ascii_table['X']);
+    make_animation(ascii_table['A']);
+
+    if((microbit_cnt % 0x111) == 0){
+      led_on(scroll[microbit_index++]);
+      if(microbit_index > 9) {
+        microbit_index = 0;
+      }
+    }
 
     switch(microbit_switch){
       case 0:
