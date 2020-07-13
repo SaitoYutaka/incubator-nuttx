@@ -87,7 +87,7 @@
  *              with the errno value set appropriately.
  */
 
-#define ULEDIOC_GETALL     _ULEDIOC(0x0004)
+#define ULEDIOC_SCROLLHAR     _ULEDIOC(0x0004)
 
 /****************************************************************************
  * Public Types
@@ -137,7 +137,10 @@ struct userled_lowerhalf_s
 
   /* Set the state of all LEDs */
 
-  CODE void (*ll_ledset)(FAR const struct userled_lowerhalf_s *lower,
+  CODE void (*ll_setchar)(FAR const struct userled_lowerhalf_s *lower,
+                         userled_set_t ledset);
+
+  CODE void (*ll_scrollchar)(FAR const struct userled_lowerhalf_s *lower,
                          userled_set_t ledset);
 };
 

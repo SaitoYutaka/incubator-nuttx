@@ -82,7 +82,7 @@ endif
 ifeq ($(CONFIG_MICROBIT_LED),y)
   CSRCS += microbit.c
 ifeq ($(CONFIG_USERLED_LOWER),y)
-  CSRCS += userled_lower.c
+  CSRCS += microbit_lower.c
 endif
   LEDDEPATH = --dep-path leds
   LEDVPATH = :leds

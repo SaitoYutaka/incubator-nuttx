@@ -340,8 +340,8 @@ static ssize_t userled_write(FAR struct file *filep, FAR const char *buffer,
   /* Read and return the current state of the LEDs */
 
   lower = priv->lu_lower;
-  DEBUGASSERT(lower && lower->ll_ledset);
-  lower->ll_ledset(lower, ledset);
+  DEBUGASSERT(lower && lower->ll_setchar);
+  lower->ll_setchar(lower, ledset);
 
   userled_givesem(&priv->lu_exclsem);
   return (ssize_t)sizeof(userled_set_t);
@@ -470,7 +470,7 @@ static int userled_ioctl(FAR struct file *filep, int cmd, unsigned long arg)
 
             lower = priv->lu_lower;
             DEBUGASSERT(lower != NULL && lower->ll_led != NULL);
-            lower->ll_ledset(lower, ledset);
+            lower->ll_setchar(lower, ledset);
             ret = OK;
           }
       }
@@ -484,7 +484,7 @@ static int userled_ioctl(FAR struct file *filep, int cmd, unsigned long arg)
      *              with the errno value set appropriately.
      */
 
-    case ULEDIOC_GETALL:
+    case ULEDIOC_SCROLLHAR:
       {
         FAR userled_set_t *ledset = (FAR userled_set_t *)((uintptr_t)arg);
 
@@ -559,9 +559,9 @@ int userled_register(FAR const char *devname,
   DEBUGASSERT(lower && lower->ll_supported);
   priv->lu_supported = lower->ll_supported(lower);
 
-  DEBUGASSERT(lower && lower->ll_ledset);
+  DEBUGASSERT(lower && lower->ll_setchar);
   priv->lu_ledset = 0;
-  lower->ll_ledset(lower, priv->lu_ledset);
+  lower->ll_setchar(lower, priv->lu_ledset);
 
   /* And register the LED driver */
 
