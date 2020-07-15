@@ -188,6 +188,13 @@ boards/arm/nrf51/microbit/src/nrf51_boot.c
 boards/arm/nrf51/microbit/src/nrf51_bringup.c
 boards/arm/nrf51/microbit/src/nrf51_buttons.c
 boards/arm/nrf51/microbit/src/nrf51_userleds.c
+drivers/leds/Kconfig
+drivers/leds/Make.defs
+drivers/leds/microbit.c
+drivers/leds/microbit_lower.c
+include/nuttx/leds/microbit_led.h
+microbit_led.drawio
+microbit_led.png
 tools/configure.sh
 ```
 
