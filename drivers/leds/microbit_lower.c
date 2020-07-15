@@ -49,7 +49,7 @@
 #undef __KERNEL__
 #include <arch/board/board.h>
 
-#if CONFIG_USERLED_LOWER
+#if CONFIG_MICROBIT_LED
 
 /****************************************************************************
  * Private Function Prototypes
@@ -126,6 +126,7 @@ static void userled_ledset(FAR const struct userled_lowerhalf_s *lower,
 static void userled_scrollchar(FAR const struct userled_lowerhalf_s *lower,
                            userled_set_t ledset)
 {
+  board_scrollchar(ledset);
   return;
 }
 
@@ -148,4 +149,4 @@ int userled_lower_initialize(FAR const char *devname)
   return userled_register(devname, &g_userled_lower);
 }
 
-#endif /* CONFIG_USERLED_LOWER */
+#endif /* CONFIG_MICROBIT_LED */

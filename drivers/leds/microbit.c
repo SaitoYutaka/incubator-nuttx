@@ -486,13 +486,21 @@ static int userled_ioctl(FAR struct file *filep, int cmd, unsigned long arg)
 
     case ULEDIOC_SCROLLHAR:
       {
-        FAR userled_set_t *ledset = (FAR userled_set_t *)((uintptr_t)arg);
+        userled_set_t ledset = (userled_set_t)((uintptr_t)arg);
 
-        /* Verify that a non-NULL pointer was provided */
+        /* Verify that a valid LED set was provided */
 
-        if (ledset)
+        if ((ledset & ~priv->lu_supported) == 0)
           {
-            *ledset = priv->lu_ledset;
+            /* Update the LED state */
+
+            priv->lu_ledset = ledset;
+
+            /* Set the new LED state */
+
+            lower = priv->lu_lower;
+            DEBUGASSERT(lower != NULL && lower->ll_led != NULL);
+            lower->ll_scrollchar(lower, ledset);
             ret = OK;
           }
       }

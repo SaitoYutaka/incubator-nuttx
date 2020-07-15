@@ -390,7 +390,7 @@ uint32_t static led_row1 = 0x0;
 uint32_t static led_row2 = 0x0;
 uint32_t static led_row3 = 0x0;
 
-uint32_t static scroll[10];
+uint32_t static scroll[11];
 
 static void make_animation(int led){
 
@@ -418,6 +418,21 @@ static void make_animation(int led){
   scroll[7] = ((led & 0b0011100111001110011100111) << 2);
   scroll[8] = ((led & 0b0001100011000110001100011) << 3);
   scroll[9] = ((led & 0b0000100001000010000100001) << 4);
+  scroll[10] = 0;
+
+
+  // scroll[0] = 0;
+  // scroll[1] = (led >> 20);
+  // scroll[2] = (led >> 15);
+  // scroll[3] = (led >> 10);
+  // scroll[4] = (led >> 5);
+  // scroll[5] = led; // ((led & 0b1111111111111111111111111) >> 0);
+  // scroll[6] = (led << 5);
+  // scroll[7] = (led << 10);
+  // scroll[8] = (led << 15);
+  // scroll[9] = (led << 20);
+  // scroll[10] = 0;
+
 
   return;
 }
@@ -526,6 +541,7 @@ static void led_dumppins(FAR const char *msg)
 static uint32_t microbit_cnt = 0;
 static uint8_t microbit_switch = 0;
 static uint8_t microbit_index = 0;
+static uint8_t is_animation = 0;
 static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
 {
   if(getreg32(NRF51_RTC0_TICK)){
@@ -533,6 +549,15 @@ static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
     putreg32(NRF51_RTC0_BIT_TICK, NRF51_RTC0_EVTENCLR); // clear
     microbit_cnt++;
 
+  if(is_animation == 1){
+    if((microbit_cnt % 0x30) == 0){
+      led_on(scroll[microbit_index++]);
+      if(microbit_index > 10) {
+        microbit_index = 0;
+        is_animation = 0;
+      }
+    }
+  }
 #if 0
     make_animation(ascii_table['A']);
 
@@ -612,6 +637,13 @@ void board_userled_all(uint8_t ledset)
 {
   ledinfo("ledset %x\n", ledset);
   led_on(ascii_table[ledset]);
+}
+
+void board_scrollchar(uint8_t ledset)
+{
+  is_animation = 1;
+  make_animation(ascii_table[ledset]);
+  return;
 }
 
 #endif /* !CONFIG_ARCH_LEDS */
