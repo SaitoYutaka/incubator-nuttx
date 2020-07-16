@@ -125,6 +125,7 @@ Just my study.
  * http://www.didel.com/MicrobitArduino.pdf
 
 ![microbit_led](microbit_led.png)
+![microbit_led](microbit.gif)
 
 ## Files
 
