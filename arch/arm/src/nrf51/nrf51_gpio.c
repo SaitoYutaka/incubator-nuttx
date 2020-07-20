@@ -242,36 +242,36 @@ bool nrf51_gpio_read(nrf51_pinset_t pinset)
 static int nrf51_gpio_interrupt(int irq, FAR void *context, FAR void *arg)
 {
   
-  if(getreg32(NRF51_GPIOTE_IN0)){
-    gpioinfo("NGPIO_BUTTONA\n");
-    putreg32(0, NRF51_GPIOTE_IN0);
-    putreg32(1, NRF51_GPIOTE_IN0);
-  }
+  // if(getreg32(NRF51_GPIOTE_IN0)){
+  //   gpioinfo("NGPIO_BUTTONA\n");
+  //   putreg32(0, NRF51_GPIOTE_IN0);
+  //   putreg32(1, NRF51_GPIOTE_IN0);
+  // }
 
-  if(getreg32(NRF51_GPIOTE_IN1)){
-    gpioinfo("NGPIO_BUTTONB\n");
-    putreg32(0, NRF51_GPIOTE_IN1);
-    putreg32(1, NRF51_GPIOTE_IN1);
-  }
+  // if(getreg32(NRF51_GPIOTE_IN1)){
+  //   gpioinfo("NGPIO_BUTTONB\n");
+  //   putreg32(0, NRF51_GPIOTE_IN1);
+  //   putreg32(1, NRF51_GPIOTE_IN1);
+  // }
   return 0;
 }
 
 void nrf51_gpio_irqinitialize(void)
 {
-  gpioinfo("nrf51_gpio_irqinitialize\n");
+  // gpioinfo("nrf51_gpio_irqinitialize\n");
 
-  putreg32(NRF51_GPIOTE_TASKS_ALL, NRF51_GPIOTE_INTENCLR);
+  // putreg32(NRF51_GPIOTE_TASKS_ALL, NRF51_GPIOTE_INTENCLR);
 
-  putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(17)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG0);
-  putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(26)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG1);
+  // putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(17)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG0);
+  // putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(26)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG1);
 
-  putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTEN);
-  putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTENSET);
+  // putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTEN);
+  // putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTENSET);
 
-  putreg32(1, NRF51_GPIOTE_IN0);
-  putreg32(1, NRF51_GPIOTE_IN1);
-  (void)irq_attach(NRF51_IRQ_GPIOTE, nrf51_gpio_interrupt, NULL);
-  up_enable_irq(NRF51_IRQ_GPIOTE);
+  // putreg32(1, NRF51_GPIOTE_IN0);
+  // putreg32(1, NRF51_GPIOTE_IN1);
+  // (void)irq_attach(NRF51_IRQ_GPIOTE, nrf51_gpio_interrupt, NULL);
+  // up_enable_irq(NRF51_IRQ_GPIOTE);
 
   // gpioinfo("NRF51_GPIOTE_INTENCLR addr %x val %x\n",NRF51_GPIOTE_INTENCLR, getreg32(NRF51_GPIOTE_INTENCLR));
   // gpioinfo("NRF51_GPIOTE_CONFIG0 addr %x val %x\n",NRF51_GPIOTE_CONFIG0, getreg32(NRF51_GPIOTE_CONFIG0));

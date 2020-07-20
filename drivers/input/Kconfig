@@ -415,6 +415,12 @@ config INPUT_CYPRESS_MBR3108_NPOLLWAITERS
 
 endif # INPUT_CYPRESS_MBR3108
 
+config MICROBIT_BUTTONS
+	bool "micro:bit Button Inputs"
+	default n
+	---help---
+		Enable standard button upper half driver.
+
 config BUTTONS
 	bool "Button Inputs"
 	default n

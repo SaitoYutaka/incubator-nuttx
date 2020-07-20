@@ -87,6 +87,11 @@ endif
 
 endif
 
+ifeq ($(CONFIG_MICROBIT_BUTTONS),y)
+  CSRCS += microbit_button_upper.c
+  CSRCS += microbit_button_lower.c
+endif
+
 ifeq ($(CONFIG_DJOYSTICK),y)
   CSRCS += djoystick.c
 endif

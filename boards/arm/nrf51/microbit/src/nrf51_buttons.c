@@ -49,7 +49,7 @@
 #include "nrf51_gpio.h"
 
 #include "nrf51-generic.h"
-
+#include "up_arch.h"
 #ifdef CONFIG_ARCH_BUTTONS
 
 /****************************************************************************
@@ -102,16 +102,28 @@ uint32_t board_buttons(void)
   uint32_t ret = 0;
   iinfo("board_buttons\n");
   /* Check that state of each key */
+  if(getreg32(NRF51_GPIOTE_IN0)){
+    gpioinfo("NGPIO_BUTTONA\n");
+    putreg32(0, NRF51_GPIOTE_IN0);
+    putreg32(1, NRF51_GPIOTE_IN0);
+    ret |= BUTTON_BTNA_BIT;
+  }
 
-  if (!nrf51_gpio_read(g_buttons[BUTTON_BTNA]))
-    {
-      ret |= BUTTON_BTNA_BIT;
-    }
+  if(getreg32(NRF51_GPIOTE_IN1)){
+    gpioinfo("NGPIO_BUTTONB\n");
+    putreg32(0, NRF51_GPIOTE_IN1);
+    putreg32(1, NRF51_GPIOTE_IN1);
+    ret |= BUTTON_BTNB_BIT;
+  }
+  // if (!nrf51_gpio_read(g_buttons[BUTTON_BTNA]))
+  //   {
+  //     ret |= BUTTON_BTNA_BIT;
+  //   }
 
-  if (!nrf51_gpio_read(g_buttons[BUTTON_BTNB]))
-    {
-      ret |= BUTTON_BTNB_BIT;
-    }
+  // if (!nrf51_gpio_read(g_buttons[BUTTON_BTNB]))
+  //   {
+  //     ret |= BUTTON_BTNB_BIT;
+  //   }
 
   return ret;
 }
@@ -145,6 +157,18 @@ int board_button_irq(int id, xcpt_t irqhandler, FAR void *arg)
 
 // #warning Missing Implementation!
   iinfo("board_button_irq\n");
+  putreg32(NRF51_GPIOTE_TASKS_ALL, NRF51_GPIOTE_INTENCLR);
+
+  putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(17)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG0);
+  putreg32((NRF51_GPIOTE_CONF_POLARITY(NRF51_GPIOTE_CONF_POLARITY_HiToLo)) | (NRF51_GPIOTE_CONF_SEL0(26)) | NRF51_GPIOTE_CONF_MODE_EVENT, NRF51_GPIOTE_CONFIG1);
+
+  putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTEN);
+  putreg32(NRF51_GPIOTE_TASKS_IN0 | NRF51_GPIOTE_TASKS_IN1, NRF51_GPIOTE_INTENSET);
+
+  putreg32(1, NRF51_GPIOTE_IN0);
+  putreg32(1, NRF51_GPIOTE_IN1);
+  (void)irq_attach(NRF51_IRQ_GPIOTE, irqhandler, NULL);
+  up_enable_irq(NRF51_IRQ_GPIOTE);
   return 1;
 }
 #endif

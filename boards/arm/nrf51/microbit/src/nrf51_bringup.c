@@ -41,7 +41,7 @@
 
 #include <sys/types.h>
 #include <syslog.h>
-#include <nuttx/input/buttons.h>
+#include <nuttx/input/microbit_buttons.h>
 
 #ifdef CONFIG_NRF51_WDT
 #  include "nrf51_wdt.h"
@@ -93,7 +93,7 @@ int nrf51_bringup(void)
     }
 #endif
 
-#ifdef CONFIG_BUTTONS
+#ifdef CONFIG_MICROBIT_BUTTONS
   /* Register the BUTTON driver */
 
   ret = btn_lower_initialize("/dev/buttons");
