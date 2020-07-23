@@ -227,14 +227,14 @@ static void btn_enable(FAR struct btn_upperhalf_s *priv)
   if (press != 0 || release != 0)
     {
       /* Enable interrupts with the new button set */
-
+      iinfo("sample1\n");
       lower->bl_enable(lower, press, release,
                        (btn_handler_t)btn_interrupt, priv);
     }
   else
     {
       /* Disable further interrupts */
-
+      iinfo("sample2\n");
       lower->bl_enable(lower, 0, 0, NULL, NULL);
     }
 
@@ -339,7 +339,7 @@ static void btn_sample(FAR struct btn_upperhalf_s *priv)
 
   /* Enable/disable interrupt handling */
 
-  btn_enable(priv);
+  // btn_enable(priv);
 
   priv->bu_sample = sample;
   leave_critical_section(flags);
@@ -813,6 +813,7 @@ int btn_register(FAR const char *devname,
 
   /* Make sure that all button interrupts are disabled */
 
+  iinfo("sample3\n");
   DEBUGASSERT(lower->bl_enable);
   lower->bl_enable(lower, 0, 0, NULL, NULL);
 
