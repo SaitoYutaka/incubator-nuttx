@@ -272,6 +272,7 @@ static void btn_sample(FAR struct btn_upperhalf_s *priv)
   irqstate_t flags;
   int i;
 
+  iinfo("start\n");
   DEBUGASSERT(priv && priv->bu_lower);
   lower = priv->bu_lower;
 
@@ -285,16 +286,17 @@ static void btn_sample(FAR struct btn_upperhalf_s *priv)
 
   DEBUGASSERT(lower->bl_buttons);
   sample = lower->bl_buttons(lower);
-
+  iinfo("sample %d \n", sample);
   add_ui_randomness(sample);
-
+  iinfo("sample %d \n", sample);
   /* Determine which buttons have been newly pressed and which have been
    * newly released.
    */
 
   change = sample ^ priv->bu_sample;
   press  = change & sample;
-
+  iinfo("change %d \n", change);
+  iinfo("press %d \n", press);
   DEBUGASSERT(lower->bl_supported);
   release = change & (lower->bl_supported(lower) & ~sample);
 
@@ -325,7 +327,10 @@ static void btn_sample(FAR struct btn_upperhalf_s *priv)
         }
 
       /* Have any signal events occurred? */
-
+      iinfo("press %d \n", press);
+      iinfo("opriv->bo_notify.bn_press %d \n", opriv->bo_notify.bn_press);
+      iinfo("release %d \n", release);
+      iinfo("opriv->bo_notify.bn_release %d \n", opriv->bo_notify.bn_release);
       if ((press & opriv->bo_notify.bn_press)     != 0 ||
           (release & opriv->bo_notify.bn_release) != 0)
         {
