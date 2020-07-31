@@ -103,7 +103,7 @@ uint32_t board_buttons(void)
   iinfo("board_buttons\n");
   /* Check that state of each key */
   if(getreg32(NRF51_GPIOTE_IN0)){
-    if(getreg32(NRF51_GPIO0_IN) & 0x20000) {
+    if((getreg32(NRF51_GPIO0_IN) & 0x20000) == 0) {
       ret |= BUTTON_BTNA_BIT;
     }
     // gpioinfo("NGPIO_BUTTONA %x\n", getreg32(NRF51_GPIO0_IN) & 0x20000);
@@ -112,7 +112,7 @@ uint32_t board_buttons(void)
   }
 
   if(getreg32(NRF51_GPIOTE_IN1)){
-    if(getreg32(NRF51_GPIO0_IN) & 0x4000000) {
+    if((getreg32(NRF51_GPIO0_IN) & 0x4000000) == 0) {
       ret |= BUTTON_BTNB_BIT;
     }
     // gpioinfo("NGPIO_BUTTONB %x\n", getreg32(NRF51_GPIO0_IN) & 0x4000000);
