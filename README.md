@@ -11,15 +11,13 @@ in progress.
 $ git clone https://github.com/SaitoYutaka/incubator-nuttx.git nuttx
 $ git clone https://github.com/SaitoYutaka/incubator-nuttx-apps.git apps
 $ cd nuttx
-$ ./tools/configure.sh microbit:nsh
+$ ./tools/configure.sh microbit:led
 $ make
 ```
 2. Copy
 Copy nuttx.hex to micro:bit
 
-3. type "microbitleds" on nsh
-
-[![](https://img.youtube.com/vi/EDUbe8Czo7s/0.jpg)](https://www.youtube.com/watch?v=EDUbe8Czo7s)
+[![](https://img.youtube.com/vi/ZNybA9v8kds/0.jpg)](https://www.youtube.com/watch?v=ZNybA9v8kds)
 
 ## Debut on micro:bit
 
@@ -173,6 +171,8 @@ boards/Kconfig
 boards/arm/nrf51/drivers/Kconfig
 boards/arm/nrf51/microbit/Kconfig
 boards/arm/nrf51/microbit/README.txt
+boards/arm/nrf51/microbit/configs/led/.gitkeep
+boards/arm/nrf51/microbit/configs/led/defconfig
 boards/arm/nrf51/microbit/configs/nsh/.gitkeep
 boards/arm/nrf51/microbit/configs/nsh/defconfig
 boards/arm/nrf51/microbit/include/.gitkeep
@@ -189,11 +189,17 @@ boards/arm/nrf51/microbit/src/nrf51_boot.c
 boards/arm/nrf51/microbit/src/nrf51_bringup.c
 boards/arm/nrf51/microbit/src/nrf51_buttons.c
 boards/arm/nrf51/microbit/src/nrf51_userleds.c
+drivers/input/Kconfig
+drivers/input/Make.defs
+drivers/input/microbit_button_lower.c
+drivers/input/microbit_button_upper.c
 drivers/leds/Kconfig
 drivers/leds/Make.defs
 drivers/leds/microbit.c
 drivers/leds/microbit_lower.c
+include/nuttx/input/microbit_buttons.h
 include/nuttx/leds/microbit_led.h
+microbit.gif
 microbit_led.drawio
 microbit_led.png
 tools/configure.sh
