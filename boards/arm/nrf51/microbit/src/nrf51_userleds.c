@@ -42,6 +42,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <debug.h>
+#include <string.h>
 
 #include <nuttx/arch.h>
 #include <arch/board/board.h>
@@ -52,6 +53,7 @@
 
 #include "nrf51-generic.h"
 #include "nrf51_rtc.h"
+#include <nuttx/leds/microbit_led.h>
 #ifndef CONFIG_ARCH_LEDS
 
 /****************************************************************************
@@ -124,7 +126,7 @@ static const uint32_t ascii_table[] =
     0b0100000100001000010001000, //  )
     0b1010101110111110111010101, //  *
     0b0100011100010000000000000, //  +
-    0b0100010000000000000000000, //  ,
+    0b0100010000000000000000000, //  
     0b1110000000000000000000000, //  -
     0b1000000000000000000000000, //  .
     0b0001000100001000010001000, //  /
@@ -148,26 +150,26 @@ static const uint32_t ascii_table[] =
     0b0110010010100011111110001, //  A
     0b1110010010111101000111110, //  B
     0b0111010001100001000101110, //  C
-    0b1111010011100011000111110, //  D
+    0b1111010001100011000111110, //  D
     0b1111110000111101000011111, //  E
     0b1111110000111101000010000, //  F
     0b0111010000100111000101110, //  G
-    0b1001010001111111000110001, //  H
+    0b1000110001111111000110001, //  H
     0b0111000100001000010001110, //  I
     0b0011000010000100101001110, //  J
     0b1001010100110001010010010, //  K
     0b1000010000100001000011110, //  L
     0b1000111011101011000110001, //  M
     0b1000111001101011001110001, //  N
-    0b0111010011100011000101110, //  O
+    0b0111010001100011000101110, //  O
     0b1110010010111001000010000, //  P
     0b0111010001100011001101111, //  Q
     0b1110010010111001010010010, //  R
     0b0111110000011100000111110, //  S
     0b1111100100001000010000100, //  T
-    0b1001010001100011000101110, //  U
+    0b1000110001100011000101110, //  U
     0b0101001010010100101000100, //  V
-    0b1001010001101011010101010, //  W
+    0b1000110001101011010101010, //  W
     0b1000101010001000101010001, //  X
     0b1000101010001000010000100, //  Y
     0b1111100010001000100011111, //  Z
@@ -180,26 +182,26 @@ static const uint32_t ascii_table[] =
     0b0110010010100011111110001, //  a
     0b1110010010111101000111110, //  b
     0b0111010001100001000101110, //  c
-    0b1111010011100011000111110, //  d
+    0b1111010001100011000111110, //  d
     0b1111110000111101000011111, //  e
     0b1111110000111101000010000, //  f
     0b0111010000100111000101110, //  g
-    0b1001010001111111000110001, //  h
+    0b1000110001111111000110001, //  h
     0b0111000100001000010001110, //  i
     0b0011000010000100101001110, //  j
     0b0100101010011000101001001, //  k
     0b1000010000100001000011110, //  l
     0b1000111011101011000110001, //  m
     0b1000111001101011001110001, //  n
-    0b0111010011100011000101110, //  o
+    0b0111010001100011000101110, //  o
     0b1110010010111001000010000, //  p
     0b0111010001100011001101111, //  q
     0b1110010010111001010010010, //  r
     0b0111110000011100000111110, //  s
     0b1111100100001000010000100, //  t
-    0b1001010001100011000101110, //  u
+    0b1000110001100011000101110, //  u
     0b0101001010010100101000100, //  v
-    0b1001010001101011010101010, //  w
+    0b1000110001101011010101010, //  w
     0b1000101010001000101010001, //  x
     0b1000101010001000010000100, //  y
     0b1111100010001000100011111, //  z
@@ -390,49 +392,52 @@ uint32_t static led_row1 = 0x0;
 uint32_t static led_row2 = 0x0;
 uint32_t static led_row3 = 0x0;
 
-uint32_t static scroll[11];
+uint32_t static scroll[9];
+char g_str_led[30];
+uint32_t g_str_len;
+scroll_dir_e g_str_dir;
+uint32_t g_str_led_index = 0xfffffff;
+uint32_t i = 0;
 
-static void make_animation(int led){
+static void save_str_info(struct ledinfo_s * ledsinfo){
+  memset(g_str_led, ' ', sizeof(g_str_led));
+  memcpy(g_str_led+1, ledsinfo->ledset, strlen(ledsinfo->ledset));
+  g_str_len = strlen(ledsinfo->ledset);
+  g_str_dir = ledsinfo->dir;
+}
 
-/*   0b0110010010111101001010010 // A
-       |    |    |    |    |          
-     0b1000010000100001000010000  // 1
+static void make_animation(uint32_t index){
 
-01100 0  - 4
-10010 5  - 9
-11110 10 - 14
-10010 15 - 19
-10010 20 - 24  // A
-
-
-*/
-
-  // 0
-  scroll[0] = 0;
-  scroll[1] = ((led & 0b1000010000100001000010000) >> 4);
-  scroll[2] = ((led & 0b1100011000110001100011000) >> 3);
-  scroll[3] = ((led & 0b1110011100111001110011100) >> 2);
-  scroll[4] = ((led & 0b1111011110111101111011110) >> 1);
-  scroll[5] = led; // ((led & 0b1111111111111111111111111) >> 0);
-  scroll[6] = ((led & 0b0111101111011110111101111) << 1);
-  scroll[7] = ((led & 0b0011100111001110011100111) << 2);
-  scroll[8] = ((led & 0b0001100011000110001100011) << 3);
-  scroll[9] = ((led & 0b0000100001000010000100001) << 4);
-  scroll[10] = 0;
-
-
-  // scroll[0] = 0;
-  // scroll[1] = (led >> 20);
-  // scroll[2] = (led >> 15);
-  // scroll[3] = (led >> 10);
-  // scroll[4] = (led >> 5);
-  // scroll[5] = led; // ((led & 0b1111111111111111111111111) >> 0);
-  // scroll[6] = (led << 5);
-  // scroll[7] = (led << 10);
-  // scroll[8] = (led << 15);
-  // scroll[9] = (led << 20);
-  // scroll[10] = 0;
-
+  if(g_str_led_index == index){
+    return;
+  }
+  g_str_led_index = index;
+  i = g_str_led[index];
+  switch(g_str_dir){
+    case SCROLL_H:
+      scroll[0] = ((ascii_table[i] & 0b1000010000100001000010000) >> 4);
+      scroll[1] = ((ascii_table[i] & 0b1100011000110001100011000) >> 3);
+      scroll[2] = ((ascii_table[i] & 0b1110011100111001110011100) >> 2);
+      scroll[3] = ((ascii_table[i] & 0b1111011110111101111011110) >> 1);
+      scroll[4] = ascii_table[i]; // ((led & 0b1111111111111111111111111) >> 0);
+      scroll[5] = ((ascii_table[i] & 0b0111101111011110111101111) << 1);
+      scroll[6] = ((ascii_table[i] & 0b0011100111001110011100111) << 2);
+      scroll[7] = ((ascii_table[i] & 0b0001100011000110001100011) << 3);
+      scroll[8] = ((ascii_table[i] & 0b0000100001000010000100001) << 4);
+      break;
+    case SCROLL_V:
+    default:
+      scroll[0] = (ascii_table[i] >> 20);
+      scroll[1] = (ascii_table[i] >> 15);
+      scroll[2] = (ascii_table[i] >> 10);
+      scroll[3] = (ascii_table[i] >> 5);
+      scroll[4] = ascii_table[i]; // ((led & 0b1111111111111111111111111) >> 0);
+      scroll[5] = (ascii_table[i] << 5);
+      scroll[6] = (ascii_table[i] << 10);
+      scroll[7] = (ascii_table[i] << 15);
+      scroll[8] = (ascii_table[i] << 20);
+      break;
+  }
 
   return;
 }
@@ -478,45 +483,6 @@ static void led_on(int led)
   return;
 }
 
-static void microbit_display(
-  char led01, char led02, char led03, char led04, char led05, 
-  char led06, char led07, char led08, char led09, char led10, 
-  char led11, char led12, char led13, char led14, char led15, 
-  char led16, char led17, char led18, char led19, char led20, 
-  char led21, char led22, char led23, char led24, char led25 
-   )
-{
-  int output = 0x0;
-  if(led01 == 1){ output |= 0x0000001; }
-  if(led02 == 1){ output |= 0x0000002; }
-  if(led03 == 1){ output |= 0x0000004; }
-  if(led04 == 1){ output |= 0x0000008; }
-  if(led05 == 1){ output |= 0x0000010; }
-  if(led06 == 1){ output |= 0x0000020; }
-  if(led07 == 1){ output |= 0x0000040; }
-  if(led08 == 1){ output |= 0x0000080; }
-  if(led09 == 1){ output |= 0x0000100; }
-  if(led10 == 1){ output |= 0x0000200; }
-  if(led11 == 1){ output |= 0x0000400; }
-  if(led12 == 1){ output |= 0x0000800; }
-  if(led13 == 1){ output |= 0x0001000; }
-  if(led14 == 1){ output |= 0x0002000; }
-  if(led15 == 1){ output |= 0x0004000; }
-  if(led16 == 1){ output |= 0x0008000; }
-  if(led17 == 1){ output |= 0x0010000; }
-  if(led18 == 1){ output |= 0x0020000; }
-  if(led19 == 1){ output |= 0x0040000; }
-  if(led20 == 1){ output |= 0x0080000; }
-  if(led21 == 1){ output |= 0x0100000; }
-  if(led22 == 1){ output |= 0x0200000; }
-  if(led23 == 1){ output |= 0x0400000; }
-  if(led24 == 1){ output |= 0x0800000; }
-  if(led25 == 1){ output |= 0x1000000; }
-  ledinfo("output %x\n", output);
-  // led_on(output);
-  return;
-}
-
 /****************************************************************************
  * Name: led_dumppins
  ****************************************************************************/
@@ -542,6 +508,7 @@ static uint32_t microbit_cnt = 0;
 static uint8_t microbit_switch = 0;
 static uint8_t microbit_index = 0;
 static uint8_t is_animation = 0;
+uint8_t led_index = 0;
 static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
 {
   if(getreg32(NRF51_RTC0_TICK)){
@@ -550,11 +517,16 @@ static int nrf51_microbitled(int irq, uint32_t *regs, void *arg)
     microbit_cnt++;
 
   if(is_animation == 1){
+    make_animation(led_index);
     if((microbit_cnt % 0x30) == 0){
       led_on(scroll[microbit_index++]);
-      if(microbit_index > 10) {
+      if(microbit_index > 8) {
         microbit_index = 0;
-        is_animation = 0;
+        // is_animation = 0;
+        led_index++;
+        if(led_index > g_str_len){
+          led_index = 0;
+        }
       }
     }
   }
@@ -639,10 +611,11 @@ void board_userled_all(uint8_t ledset)
   led_on(ascii_table[ledset]);
 }
 
-void board_scrollchar(uint8_t ledset)
+void board_scrollchar(struct ledinfo_s * ledsinfo)
 {
   is_animation = 1;
-  make_animation(ascii_table[ledset]);
+  save_str_info(ledsinfo);
+  ledinfo("ledset %s len %d\n", ledsinfo->ledset, strlen(ledsinfo->ledset));
   return;
 }
 

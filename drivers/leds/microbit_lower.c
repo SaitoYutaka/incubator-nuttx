@@ -61,7 +61,7 @@ static void userled_led(FAR const struct userled_lowerhalf_s *lower,
 static void userled_ledset(FAR const struct userled_lowerhalf_s *lower,
                            userled_set_t ledset);
 static void userled_scrollchar(FAR const struct userled_lowerhalf_s *lower,
-                           userled_set_t ledset);
+                           struct ledinfo_s * ledset);
 
 /****************************************************************************
  * Private Data
@@ -124,7 +124,7 @@ static void userled_ledset(FAR const struct userled_lowerhalf_s *lower,
 }
 
 static void userled_scrollchar(FAR const struct userled_lowerhalf_s *lower,
-                           userled_set_t ledset)
+                           struct ledinfo_s * ledset)
 {
   board_scrollchar(ledset);
   return;

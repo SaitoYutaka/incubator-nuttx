@@ -486,21 +486,22 @@ static int userled_ioctl(FAR struct file *filep, int cmd, unsigned long arg)
 
     case ULEDIOC_SCROLLHAR:
       {
-        userled_set_t ledset = (userled_set_t)((uintptr_t)arg);
+        FAR struct ledinfo_s *str_led = (FAR struct ledinfo_s *)((uintptr_t)arg);
+        // userled_set_t ledset = (userled_set_t)((uintptr_t)arg);
 
         /* Verify that a valid LED set was provided */
 
-        if ((ledset & ~priv->lu_supported) == 0)
+        if ((str_led) != 0)
           {
             /* Update the LED state */
 
-            priv->lu_ledset = ledset;
+            // priv->lu_ledset = str_led;
 
             /* Set the new LED state */
 
             lower = priv->lu_lower;
             DEBUGASSERT(lower != NULL && lower->ll_led != NULL);
-            lower->ll_scrollchar(lower, ledset);
+            lower->ll_scrollchar(lower, str_led);
             ret = OK;
           }
       }
@@ -549,7 +550,7 @@ int userled_register(FAR const char *devname,
   DEBUGASSERT(devname && lower);
 
   /* Allocate a new LED driver instance */
-
+  ledinfo("start\n");
   priv = (FAR struct userled_upperhalf_s *)
     kmm_zalloc(sizeof(struct userled_upperhalf_s));
 

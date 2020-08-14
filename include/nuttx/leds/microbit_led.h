@@ -124,6 +124,18 @@ struct userled_s
  * the upper and lower halves into one driver.
  */
 
+typedef enum
+{
+  SCROLL_H = 0,
+  SCROLL_V,
+} scroll_dir_e;
+
+struct ledinfo_s
+{
+  const char * ledset;
+  scroll_dir_e dir;
+};
+
 struct userled_lowerhalf_s
 {
   /* Return the set of LEDs supported by the board */
@@ -141,7 +153,7 @@ struct userled_lowerhalf_s
                          userled_set_t ledset);
 
   CODE void (*ll_scrollchar)(FAR const struct userled_lowerhalf_s *lower,
-                         userled_set_t ledset);
+                         struct ledinfo_s * ledset);
 };
 
 /****************************************************************************
@@ -193,6 +205,8 @@ int userled_register(FAR const char *devname,
  ****************************************************************************/
 
 int userled_lower_initialize(FAR const char *devname);
+
+void board_scrollchar(struct ledinfo_s * ledsinfo);
 
 #undef EXTERN
 #ifdef __cplusplus
